@@ -45,7 +45,7 @@ class SplashPage extends StatelessWidget {
 
   Widget _onLoaded(BuildContext context, AppSetting appSetting) {
     if (appSetting.accountNo != null) {
-      // TODO ここでさらにデータをロード
+      // TODO ここでさらにデータをロードしてトップ画面へ
       return _onLoading(context, accountNo: appSetting.accountNo);
     } else {
       return _viewFirstStart(context);
@@ -59,7 +59,7 @@ class SplashPage extends StatelessWidget {
         children: [
           Image.asset(R.res.images.startImage),
           SizedBox(height: 16),
-          AppText.largeWithTheme('コーヒータイプのアプリです。'),
+          AppText.large('コーヒータイプのアプリです。'),
           Expanded(
             child: Align(
               alignment: FractionalOffset.center,

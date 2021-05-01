@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 
-class AppProgressDialog {
-  const AppProgressDialog({required this.execute});
+class AppProgressDialog<T> {
+  const AppProgressDialog();
 
-  final Future<bool> Function() execute;
+  Future<void> show(
+    BuildContext context, {
+    required Future<T> Function() execute,
+    required Function(T) onSuccess,
+    required Function(Exception, StackTrace) onError,
+  }) async {
+    _showProgressDialog(context);
+    try {
+      final result = await execute();
+      _closeDialog(context);
+      onSuccess(result);
+    } on Exception catch (e, s) {
+      _closeDialog(context);
+      onError(e, s);
+    }
+  }
 
-  Future<bool> show(BuildContext context) async {
-    showDialog<void>(
+  Future<void> _showProgressDialog(BuildContext context) async {
+    await showDialog<void>(
       context: context,
       builder: (_) {
         return Dialog(
@@ -18,9 +33,9 @@ class AppProgressDialog {
         );
       },
     );
-    final result = await execute();
-    // 処理が完了したらダイアログは閉じる
+  }
+
+  void _closeDialog(BuildContext context) {
     Navigator.pop(context);
-    return result;
   }
 }

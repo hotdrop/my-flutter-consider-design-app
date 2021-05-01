@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/role.dart';
 import 'package:mybt/ui/home/home_page.dart';
-import 'package:mybt/ui/start/splash_page.dart';
 import 'package:mybt/ui/start/start_view_model.dart';
+import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/progress_dialog.dart';
 
 class StartPage extends StatelessWidget {
@@ -92,15 +92,20 @@ class StartPage extends StatelessWidget {
     final viewModel = context.read(startViewModelProvider);
     return ElevatedButton(
       onPressed: () async {
-        final progressDialog = AppProgressDialog(execute: viewModel.save);
-        final result = await progressDialog.show(context);
-        if (result) {
-          AppLogger.d('成功したので次に進みます。');
-          HomePage.start(context);
-        } else {
-          AppLogger.d('エラーですよ・・ ${viewModel.errorMessage}');
-          // TODO 本当はここでなんか出したい
-        }
+        final dialog = AppProgressDialog<void>();
+        await dialog.show(
+          context,
+          execute: viewModel.save,
+          onSuccess: (result) {
+            AppLogger.d('成功したので次に進みます。');
+            HomePage.start(context);
+          },
+          onError: (e, s) {
+            AppLogger.d('エラーです。e:$e stackTrace:$s');
+            final errorDialog = AppDialog('$e');
+            errorDialog.show(context);
+          },
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),

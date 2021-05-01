@@ -4,7 +4,11 @@ import 'package:mybt/res/R.dart';
 class AppText extends StatelessWidget {
   const AppText._(this._text, this._style, this.isTheme, this.size);
 
-  factory AppText.largeWithTheme(String text, {TextStyle? style}) {
+  factory AppText.normal(String text, {TextStyle? style}) {
+    return AppText._(text, style, true, 16);
+  }
+
+  factory AppText.large(String text, {TextStyle? style}) {
     return AppText._(text, style, true, 24);
   }
 
