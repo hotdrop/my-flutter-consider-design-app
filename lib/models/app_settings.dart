@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/common/app_logger.dart';
-import 'package:mybt/models/role.dart';
 import 'package:mybt/repository/local/local_data_source.dart';
 import 'package:mybt/repository/settings_repository.dart';
 
@@ -32,11 +31,11 @@ class AppSettingsNotifier extends StateNotifier<AppSetting> {
 }
 
 class AppSetting {
-  AppSetting({this.userId, this.myRole, this.nickName});
+  AppSetting({this.userId, this.nickName, this.email});
 
   final String? userId;
-  final Role? myRole;
   final String? nickName;
+  final String? email;
 
   bool isInitialized() {
     return userId != null;

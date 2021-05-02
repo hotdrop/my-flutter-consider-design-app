@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:mybt/models/role.dart';
 import 'package:mybt/models/user.dart';
 import 'package:mybt/repository/remote/fake/fake_http_client.dart';
 import 'package:mybt/repository/remote/response/user_response.dart';
@@ -16,8 +15,8 @@ class UserApi {
 
   final Dio _httpClient;
 
-  Future<User> create(String? nickname, RoleType type) async {
-    // 本当はnickNameやtypeもrequestbodyにのせる
+  Future<User> create(String? nickname, String? email) async {
+    // プロダクトであればnickNameやemailもrequestbodyに入れてサーバーに登録する
     final url = '${R.res.url.api}/user';
     final response = await _httpClient.post<Map<String, Object>>(url);
 

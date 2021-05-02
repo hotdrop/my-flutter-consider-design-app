@@ -17,9 +17,8 @@ class PointRepository {
   final PointApi _api;
   final SettingsDao _settingsDao;
 
-  Future<List<Point>> find() async {
-    // APIでポイント取得
-    final accountNo = _settingsDao.getUserId()!;
-    return _api.find(accountNo);
+  Future<Point> find() async {
+    final userId = _settingsDao.getUserId()!;
+    return await _api.find(userId);
   }
 }

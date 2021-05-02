@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mybt/repository/local/entities/role_entity.dart';
-import 'package:mybt/repository/local/role_dao.dart';
+import 'package:mybt/repository/local/entities/item_entity.dart';
+import 'package:mybt/repository/local/item_dao.dart';
 import 'package:mybt/repository/local/settings_dao.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,8 +11,8 @@ class LocalDataSource {
   static final LocalDataSource _instance = LocalDataSource._();
   static LocalDataSource get instance => _instance;
 
-  RoleDao? _roleDao;
-  RoleDao get roleDao => _roleDao!;
+  ItemDao? _itemDao;
+  ItemDao get itemDao => _itemDao!;
 
   SettingsDao? _settingsDao;
   SettingsDao get settingsDao => _settingsDao!;
@@ -23,16 +23,16 @@ class LocalDataSource {
     }
 
     await Hive.initFlutter();
-    Hive.registerAdapter(RoleEntityAdapter());
+    Hive.registerAdapter(ItemEntityAdapter());
 
-    final roleBox = await Hive.openBox<RoleEntity>(RoleEntity.boxName);
-    _roleDao = RoleDao(roleBox);
+    final roleBox = await Hive.openBox<ItemEntity>(ItemEntity.boxName);
+    _itemDao = ItemDao(roleBox);
 
     final sharedPrefs = await SharedPreferences.getInstance();
     _settingsDao = SettingsDao(sharedPrefs);
   }
 
   bool _isInitialized() {
-    return _roleDao != null && _settingsDao != null;
+    return _itemDao != null && _settingsDao != null;
   }
 }

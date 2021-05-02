@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mybt/common/app_logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'fake_http_client.g.dart';
 
@@ -9,6 +10,7 @@ final _fakeCoffeeUser = _$_fakeCoffeeUserJsonLiteral;
 
 class FakeDio implements Dio {
   static const String fakeCoffeeUserID = '4d58da01395bcaf9';
+  static const String fakeLocalStorePointKey = 'key101';
 
   @override
   Future<Response<T>> get<T>(
@@ -22,6 +24,10 @@ class FakeDio implements Dio {
     switch (path) {
       case 'https://fake.mybt.coffee.jp/api/v1/user/$fakeCoffeeUserID':
         return FakeResponse(_fakeCoffeeUser) as Response<T>;
+      case 'https://fake.mybt.coffee.jp/api/v1/point':
+        final sharedPrefs = await SharedPreferences.getInstance();
+        final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
+        return FakeResponse({'point': currentPoint}) as Response<T>;
     }
     throw UnimplementedError();
   }

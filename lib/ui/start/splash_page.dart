@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/models/app_settings.dart';
+import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
+import 'package:mybt/ui/home/home_page.dart';
 import 'package:mybt/ui/start/start_page.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
@@ -46,8 +48,13 @@ class SplashPage extends StatelessWidget {
 
   Widget _onLoaded(BuildContext context, AppSetting appSetting) {
     if (appSetting.isInitialized()) {
-      // TODO ここでさらにデータをロードしてトップ画面へ
-      return _onLoading(context, userId: appSetting.userId);
+      return Consumer(
+        builder: (context, watch, child) {
+          final pointNotifier = watch(pointProvider.notifier);
+          pointNotifier.find().then((_) => HomePage.start(context));
+          return _onLoading(context, userId: appSetting.userId);
+        },
+      );
     } else {
       return _viewFirstStart(context);
     }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mybt/models/app_settings.dart';
+import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
@@ -39,54 +42,56 @@ class HomePage extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 4,
-        child: InkWell(
-          onTap: () {
-            // TODO ポイント詳細に遷移
-          },
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: Ink.image(
-                  image: AssetImage(R.res.images.homePointCard),
-                  fit: BoxFit.fill,
-                ),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Ink.image(
+                image: AssetImage(R.res.images.homePointCard),
+                fit: BoxFit.fill,
               ),
-              _pointOnCard(context),
-              _detailOnCard(),
-            ],
-          ),
+            ),
+            _pointOnCard(context),
+            _detailOnCard(),
+          ],
         ),
       ),
     );
   }
 
   Widget _pointOnCard(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 36),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          // TODO 動的に取得
-          _labelOnCard('3600', fontSize: 32),
-          _labelOnCard('ポイント'),
-        ],
-      ),
+    return Consumer(
+      builder: (context, watch, child) {
+        final point = watch(pointProvider);
+        return Padding(
+          padding: const EdgeInsets.only(top: 36),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _labelOnCard('${point.balance}', fontSize: 32),
+              _labelOnCard('ポイント'),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _detailOnCard() {
-    return Positioned(
-      bottom: 16,
-      left: 16,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _labelOnCard('ニックネーム: 未設定'),
-          _labelOnCard('※ ポイントの有効期限は1年です'),
-        ],
-      ),
-    );
+    return Consumer(builder: (context, watch, child) {
+      final appSettings = watch(appSettingsProvider);
+      return Positioned(
+        bottom: 16,
+        left: 16,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _labelOnCard(appSettings.nickName ?? 'ニックネーム未設定'),
+            _labelOnCard(appSettings.email ?? 'Email未設定'),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _labelOnCard(String text, {double? fontSize}) {
