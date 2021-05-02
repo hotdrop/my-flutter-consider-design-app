@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('ホーム')),
+      appBar: AppBar(title: Text(R.res.strings.homeTitle)),
       body: _viewBody(context),
     );
   }
@@ -69,7 +69,7 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               _labelOnCard('${point.balance}', fontSize: 32),
-              _labelOnCard('ポイント'),
+              _labelOnCard(R.res.strings.pointUnit),
             ],
           ),
         );
@@ -86,8 +86,8 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _labelOnCard(appSettings.nickName ?? 'ニックネーム未設定'),
-            _labelOnCard(appSettings.email ?? 'Email未設定'),
+            _labelOnCard(appSettings.nickName ?? R.res.strings.homeUnSettingNickname),
+            _labelOnCard(appSettings.email ?? R.res.strings.homeUnSettingEmail),
           ],
         ),
       );
@@ -108,14 +108,14 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _MenuButton(
-            label: 'ポイント取得',
+            label: R.res.strings.homeMenuGetPoint,
             iconData: Icons.account_balance_wallet,
             onTap: () {
               // TODO ポイント獲得ページへ
             },
           ),
           _MenuButton(
-            label: 'ポイント利用',
+            label: R.res.strings.homeMenuBuyItem,
             iconData: Icons.shopping_cart_outlined,
             onTap: () {
               // TODO ポイント利用ページへ

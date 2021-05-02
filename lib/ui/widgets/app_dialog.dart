@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mybt/res/R.dart';
 
 class AppDialog {
   const AppDialog(
@@ -27,7 +28,7 @@ class AppDialog {
             onOk?.call();
             Navigator.pop(context);
           },
-          child: const Text('OK'),
+          child: Text(R.res.strings.dialogOk),
         ),
       ],
     );
@@ -63,14 +64,14 @@ class ConfirmDialog {
             onCancel?.call();
             Navigator.pop(context);
           },
-          child: const Text('キャンセル'),
+          child: Text(R.res.strings.dialogCancel),
         ),
         TextButton(
           onPressed: () {
             onOk.call();
             Navigator.pop(context);
           },
-          child: const Text('OK'),
+          child: Text(R.res.strings.dialogOk),
         ),
       ],
     );

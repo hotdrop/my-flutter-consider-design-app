@@ -11,7 +11,7 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('起動')),
+      appBar: AppBar(title: Text(R.res.strings.splashTitle)),
       body: Consumer(
         builder: (context, watch, child) {
           final onInit = watch(appSettingsProvider.notifier).init();
@@ -40,7 +40,7 @@ class SplashPage extends StatelessWidget {
           const SizedBox(height: 16),
           const CircularProgressIndicator(),
           SizedBox(height: 24),
-          if (userId != null) Text('ユーザーID: $userId'),
+          if (userId != null) Text('${R.res.strings.splashUserIDLabel}$userId'),
         ],
       ),
     );
@@ -67,7 +67,7 @@ class SplashPage extends StatelessWidget {
         children: [
           Image.asset(R.res.images.startImage),
           SizedBox(height: 16),
-          AppText.large('コーヒータイプのアプリです。'),
+          AppText.large(R.res.strings.splashOverview),
           Expanded(
             child: Align(
               alignment: FractionalOffset.center,
@@ -86,7 +86,7 @@ class SplashPage extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
-        child: Text('はじめる'),
+        child: Text(R.res.strings.splashFirstTimeButton),
       ),
     );
   }

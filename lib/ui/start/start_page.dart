@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/common/app_logger.dart';
+import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_page.dart';
 import 'package:mybt/ui/start/start_view_model.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
@@ -20,7 +21,7 @@ class StartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('はじめに'),
+        title: Text(R.res.strings.startTitle),
       ),
       body: _viewBody(context),
     );
@@ -31,7 +32,7 @@ class StartPage extends StatelessWidget {
       padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(
         children: [
-          Text('ユーザー情報を登録します。嫌だったら入力せずに進んでください。'),
+          Text(R.res.strings.startOverview),
           SizedBox(height: 16),
           _textFieldNickName(context),
           SizedBox(height: 16),
@@ -48,8 +49,8 @@ class StartPage extends StatelessWidget {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
-        labelText: 'ニックネーム（省略可能）',
-        hintText: 'サイヤ人',
+        labelText: R.res.strings.startNickNameFieldLabel,
+        hintText: R.res.strings.startNickNameFieldHint,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
@@ -65,8 +66,8 @@ class StartPage extends StatelessWidget {
     return TextFormField(
       textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
-        labelText: 'メールアドレス（省略可能）',
-        hintText: 'migatteno_gokui@seven.universe.wis.jp',
+        labelText: R.res.strings.startEmailFieldLabel,
+        hintText: R.res.strings.startEmailFieldHint,
         border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
@@ -98,7 +99,7 @@ class StartPage extends StatelessWidget {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
-        child: Text('この内容で登録する'),
+        child: Text(R.res.strings.startRegisterButton),
       ),
     );
   }
