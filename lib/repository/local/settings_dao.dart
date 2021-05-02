@@ -3,13 +3,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SettingsDao {
   const SettingsDao(this._prefs);
 
-  static const _nickNameKey = 'key001';
-  static const _loggedInKey = 'key002';
-  static const _accountNoKey = 'key003';
+  static const _userIdKey = 'key001';
+  static const _nickNameKey = 'key002';
 
   final SharedPreferences _prefs;
 
-  String? findNickName() {
+  String? getUserId() {
+    if (_prefs.containsKey(_userIdKey)) {
+      return _prefs.getString(_userIdKey);
+    } else {
+      return null;
+    }
+  }
+
+  String? getNickName() {
     if (_prefs.containsKey(_nickNameKey)) {
       return _prefs.getString(_nickNameKey);
     } else {
@@ -17,19 +24,10 @@ class SettingsDao {
     }
   }
 
-  bool findLoggedIn() {
-    if (_prefs.containsKey(_loggedInKey)) {
-      return _prefs.getBool(_loggedInKey)!;
-    } else {
-      return false;
-    }
-  }
-
-  String? findAccountNo() {
-    if (_prefs.containsKey(_accountNoKey)) {
-      return _prefs.getString(_accountNoKey);
-    } else {
-      return null;
+  void save({required String userId, String? nickName}) {
+    _prefs.setString(_userIdKey, userId);
+    if (nickName != null) {
+      _prefs.setString(_nickNameKey, nickName);
     }
   }
 }

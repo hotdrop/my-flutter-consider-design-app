@@ -29,7 +29,7 @@ class SplashPage extends StatelessWidget {
     );
   }
 
-  Widget _onLoading(BuildContext context, {String? accountNo}) {
+  Widget _onLoading(BuildContext context, {String? userId}) {
     return Padding(
       padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(
@@ -37,16 +37,17 @@ class SplashPage extends StatelessWidget {
           Image.asset(R.res.images.startImage),
           const SizedBox(height: 16),
           const CircularProgressIndicator(),
-          if (accountNo != null) Text('アカウントNo: $accountNo'),
+          SizedBox(height: 24),
+          if (userId != null) Text('ユーザーID: $userId'),
         ],
       ),
     );
   }
 
   Widget _onLoaded(BuildContext context, AppSetting appSetting) {
-    if (appSetting.accountNo != null) {
+    if (appSetting.isInitialized()) {
       // TODO ここでさらにデータをロードしてトップ画面へ
-      return _onLoading(context, accountNo: appSetting.accountNo);
+      return _onLoading(context, userId: appSetting.userId);
     } else {
       return _viewFirstStart(context);
     }

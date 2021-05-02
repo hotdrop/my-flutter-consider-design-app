@@ -25,16 +25,20 @@ class AppSettingsNotifier extends StateNotifier<AppSetting> {
   }
 
   Future<void> refresh() async {
+    AppLogger.d('アプリ設定のrefreshが呼ばれました。');
     final repository = _read(SettingsRepositoryProvider);
     state = await repository.find();
   }
 }
 
 class AppSetting {
-  AppSetting({this.accountNo, this.myRole, this.nickName, this.loggedIn = false});
+  AppSetting({this.userId, this.myRole, this.nickName});
 
-  final String? accountNo;
+  final String? userId;
   final Role? myRole;
   final String? nickName;
-  final bool loggedIn;
+
+  bool isInitialized() {
+    return userId != null;
+  }
 }

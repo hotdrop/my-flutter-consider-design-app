@@ -7,7 +7,7 @@ class RoleDao {
 
   final Box<RoleEntity> _box;
 
-  Role? find() {
+  Role? getMyRole() {
     if (_box.isEmpty) {
       return null;
     }

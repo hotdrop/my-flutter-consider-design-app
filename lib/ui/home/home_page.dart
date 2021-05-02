@@ -51,7 +51,7 @@ class HomePage extends StatelessWidget {
                   fit: BoxFit.fill,
                 ),
               ),
-              _pointOnCard(),
+              _pointOnCard(context),
               _detailOnCard(),
             ],
           ),
@@ -60,7 +60,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _pointOnCard() {
+  Widget _pointOnCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 36),
       child: Row(
