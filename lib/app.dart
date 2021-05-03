@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:lifecycle/lifecycle.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/start/splash_page.dart';
 
@@ -14,6 +15,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: [
         Locale('ja', ''),
       ],
+      navigatorObservers: [defaultLifecycleObserver],
       title: 'My Blue Print App',
       theme: R.res.theme,
       home: SplashPage(),

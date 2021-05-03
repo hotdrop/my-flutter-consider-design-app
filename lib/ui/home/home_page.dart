@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lifecycle/lifecycle.dart';
+import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_settings.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
+import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
 class HomePage extends StatelessWidget {
@@ -18,10 +21,29 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-      body: _viewBody(context),
+    return LifecycleWrapper(
+      onLifecycleEvent: (event) {
+        if (event == LifecycleEvent.active) {
+          onResume(context);
+        } else if (event == LifecycleEvent.inactive) {
+          onStop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(title: Text(R.res.strings.homeTitle)),
+        body: _viewBody(context),
+      ),
     );
+  }
+
+  void onResume(BuildContext context) {
+    AppLogger.d('onResumeが呼ばれました');
+    final viewModel = context.read(homeViewModel);
+    viewModel.onRefresh();
+  }
+
+  void onStop() {
+    AppLogger.d('onStopが呼ばれた');
   }
 
   Widget _viewBody(BuildContext context) {
@@ -50,6 +72,7 @@ class HomePage extends StatelessWidget {
                 fit: BoxFit.fill,
               ),
             ),
+            _currentDateOnCard(),
             _pointOnCard(context),
             _detailOnCard(),
           ],
@@ -58,12 +81,23 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _currentDateOnCard() {
+    return Consumer(builder: (context, watch, child) {
+      final nowStr = watch(homeViewModel).nowDateTimeStr;
+      return Positioned(
+        top: 16,
+        left: 16,
+        child: _labelOnCard(nowStr),
+      );
+    });
+  }
+
   Widget _pointOnCard(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
         final point = watch(pointProvider);
         return Padding(
-          padding: const EdgeInsets.only(top: 36),
+          padding: const EdgeInsets.only(top: 60),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,

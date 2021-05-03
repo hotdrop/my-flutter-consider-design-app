@@ -29,15 +29,15 @@ class StartPage extends StatelessWidget {
 
   Widget _viewBody(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(
         children: [
           Text(R.res.strings.startOverview),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _textFieldNickName(context),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _textFieldEmail(context),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           _buttonSave(context),
         ],
       ),
@@ -45,7 +45,6 @@ class StartPage extends StatelessWidget {
   }
 
   Widget _textFieldNickName(BuildContext context) {
-    final viewModel = context.read(startViewModelProvider);
     return TextFormField(
       textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
@@ -56,13 +55,12 @@ class StartPage extends StatelessWidget {
         ),
       ),
       onChanged: (String value) {
-        viewModel.inputNickName(value);
+        context.read(startViewModel).inputEmail(value);
       },
     );
   }
 
   Widget _textFieldEmail(BuildContext context) {
-    final viewModel = context.read(startViewModelProvider);
     return TextFormField(
       textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
@@ -73,13 +71,13 @@ class StartPage extends StatelessWidget {
         ),
       ),
       onChanged: (String value) {
-        viewModel.inputEmail(value);
+        context.read(startViewModel).inputEmail(value);
       },
     );
   }
 
   Widget _buttonSave(BuildContext context) {
-    final viewModel = context.read(startViewModelProvider);
+    final viewModel = context.read(startViewModel);
     return ElevatedButton(
       onPressed: () async {
         final dialog = AppProgressDialog<void>();

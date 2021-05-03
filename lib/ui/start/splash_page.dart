@@ -19,7 +19,7 @@ class SplashPage extends StatelessWidget {
             future: onInit,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                final state = watch(appSettingsProvider);
+                final state = context.read(appSettingsProvider);
                 return _onLoaded(context, state);
               } else {
                 return _onLoading(context);
@@ -62,11 +62,11 @@ class SplashPage extends StatelessWidget {
 
   Widget _viewFirstStart(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(
         children: [
           Image.asset(R.res.images.startImage),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           AppText.large(R.res.strings.splashOverview),
           Expanded(
             child: Align(

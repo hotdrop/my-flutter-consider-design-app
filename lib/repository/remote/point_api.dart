@@ -16,17 +16,18 @@ class PointApi {
   final Dio _httpClient;
 
   Future<Point> find(String userId) async {
-    final url = '${R.res.url.api}/point';
-    final response = await _httpClient.get<Map<String, Object>>(url);
+    final request = {'userId': userId};
 
-    await Future<void>.delayed(Duration(seconds: 1));
+    final response = await _httpClient.get<Map<String, Object>>(
+      '${R.res.url.api}/point',
+      queryParameters: request,
+    );
 
-    final responseData = response.data;
-    if (responseData == null) {
+    if (response.statusCode != 200) {
       throw HttpException('ポイントの取得に失敗しました。');
     }
 
-    final data = PointResponse.mapper(responseData);
+    final data = PointResponse.mapper(response.data!);
     return Point(data.point);
   }
 }

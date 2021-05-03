@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/settings_repository.dart';
 
-final startViewModelProvider = ChangeNotifierProvider.autoDispose((ref) {
+final startViewModel = ChangeNotifierProvider.autoDispose((ref) {
   return StartViewModel(
     ref.read(SettingsRepositoryProvider),
   );

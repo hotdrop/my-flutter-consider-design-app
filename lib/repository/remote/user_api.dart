@@ -16,17 +16,15 @@ class UserApi {
   final Dio _httpClient;
 
   Future<User> create(String? nickname, String? email) async {
-    // プロダクトであればnickNameやemailもrequestbodyに入れてサーバーに登録する
-    final url = '${R.res.url.api}/user';
-    final response = await _httpClient.post<Map<String, Object>>(url);
-
-    await Future<void>.delayed(Duration(seconds: 2));
-
-    final responseData = response.data;
-    if (responseData == null) {
+    final request = {'nickname': nickname, 'email': email};
+    final response = await _httpClient.post<Map<String, Object>>(
+      '${R.res.url.api}/user',
+      data: request,
+    );
+    if (response.statusCode != 200) {
       throw HttpException('ユーザー登録に失敗しました。');
     }
-    final data = UserResponse.mapper(responseData);
+    final data = UserResponse.mapper(response.data!);
 
     return User(data.userId);
   }

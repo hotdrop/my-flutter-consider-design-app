@@ -25,8 +25,8 @@ class LocalDataSource {
     await Hive.initFlutter();
     Hive.registerAdapter(ItemEntityAdapter());
 
-    final roleBox = await Hive.openBox<ItemEntity>(ItemEntity.boxName);
-    _itemDao = ItemDao(roleBox);
+    final itemBox = await Hive.openBox<ItemEntity>(ItemEntity.boxName);
+    _itemDao = ItemDao(itemBox);
 
     final sharedPrefs = await SharedPreferences.getInstance();
     _settingsDao = SettingsDao(sharedPrefs);

@@ -23,11 +23,15 @@ class FakeDio implements Dio {
     AppLogger.d('$path をgetで叩きます。');
     switch (path) {
       case 'https://fake.mybt.coffee.jp/api/v1/user/$fakeCoffeeUserID':
-        return FakeResponse(_fakeCoffeeUser) as Response<T>;
+        // 通信してるっぽくしたいのでdelayをさせる
+        await Future<void>.delayed(Duration(seconds: 1));
+        return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
       case 'https://fake.mybt.coffee.jp/api/v1/point':
         final sharedPrefs = await SharedPreferences.getInstance();
         final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
-        return FakeResponse({'point': currentPoint}) as Response<T>;
+        // 通信してるっぽくしたいのでdelayをさせる
+        await Future<void>.delayed(Duration(seconds: 1));
+        return FakeResponse({'point': currentPoint}, statusCode: 200) as Response<T>;
     }
     throw UnimplementedError();
   }
@@ -45,7 +49,9 @@ class FakeDio implements Dio {
     AppLogger.d('$path をpostで叩きます。data=$data');
     switch (path) {
       case 'https://fake.mybt.coffee.jp/api/v1/user':
-        return FakeResponse(_fakeCoffeeUser) as Response<T>;
+        // 通信してるっぽくしたいのでdelayをさせる
+        await Future<void>.delayed(Duration(seconds: 2));
+        return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
       default:
         throw UnimplementedError();
     }
@@ -58,10 +64,13 @@ class FakeDio implements Dio {
 }
 
 class FakeResponse implements Response<Map<String, Object>> {
-  FakeResponse(this.data);
+  FakeResponse(this.data, {required this.statusCode});
 
   @override
   final Map<String, Object> data;
+
+  @override
+  int? statusCode;
 
   @override
   void noSuchMethod(Invocation invocation) {
