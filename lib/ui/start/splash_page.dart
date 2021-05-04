@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/models/app_settings.dart';
-import 'package:mybt/models/point.dart';
+import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_page.dart';
 import 'package:mybt/ui/start/splash_view_model.dart';
@@ -52,13 +51,8 @@ class SplashPage extends StatelessWidget {
       return _viewFirstStart(context);
     }
 
-    return Consumer(
-      builder: (context, watch, child) {
-        final pointNotifier = watch(pointProvider.notifier);
-        pointNotifier.find().then((_) => HomePage.start(context));
-        return _onLoading(context, userId: appSetting.userId);
-      },
-    );
+    Future<void>.delayed(Duration.zero).then((_) => HomePage.start(context));
+    return _onLoading(context, userId: appSetting.userId);
   }
 
   Widget _onError(BuildContext context, String errorMsg) {

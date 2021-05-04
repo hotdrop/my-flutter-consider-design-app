@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mybt/models/app_settings.dart';
+import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/ui/base_view_model.dart';
 
 final homeViewModel = ChangeNotifierProvider.autoDispose((ref) {
   final point = ref.watch(pointProvider);
-  final appSetting = ref.watch(appSettingsProvider);
+  final appSetting = ref.watch(appSettingProvider);
   return HomeViewModel(ref.read, point, appSetting);
 });
 
@@ -33,7 +33,7 @@ class HomeViewModel extends BaseViewModel {
 
   Future<void> onRefresh() async {
     await _read(pointProvider.notifier).find();
-    await _read(appSettingsProvider.notifier).refresh();
+    await _read(appSettingProvider.notifier).refresh();
     notifyListeners();
   }
 }

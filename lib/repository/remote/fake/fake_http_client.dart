@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mybt/common/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +9,9 @@ part 'fake_http_client.g.dart';
 @JsonLiteral('fake_coffee_user.json')
 final _fakeCoffeeUser = _$_fakeCoffeeUserJsonLiteral;
 
-class FakeDio implements Dio {
+final httpClient = Provider((ref) => _FakeDio());
+
+class _FakeDio implements Dio {
   static const String fakeCoffeeUserID = '4d58da01395bcaf9';
   static const String fakeLocalStorePointKey = 'key101';
 

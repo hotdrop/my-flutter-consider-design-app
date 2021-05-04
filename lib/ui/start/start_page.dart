@@ -84,7 +84,6 @@ class StartPage extends StatelessWidget {
 
   Widget _textFieldEmail(BuildContext context) {
     return TextFormField(
-      textCapitalization: TextCapitalization.words,
       decoration: InputDecoration(
         labelText: R.res.strings.startEmailFieldLabel,
         hintText: R.res.strings.startEmailFieldHint,

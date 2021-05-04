@@ -1,19 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/repository/settings_repository.dart';
+import 'package:mybt/repository/setting_repository.dart';
 import 'package:mybt/ui/base_view_model.dart';
 
-final startViewModel = ChangeNotifierProvider.autoDispose((ref) {
-  return StartViewModel(
-    ref.read(SettingsRepositoryProvider),
-  );
-});
+final startViewModel = ChangeNotifierProvider.autoDispose((ref) => StartViewModel(ref.read));
 
 class StartViewModel extends BaseViewModel {
-  StartViewModel(this._repository) {
+  StartViewModel(this._read) {
     init();
   }
 
-  final SettingsRepository _repository;
+  final Reader _read;
 
   String? _inputNickName;
   String? _inputEmail;
@@ -33,6 +29,7 @@ class StartViewModel extends BaseViewModel {
   }
 
   Future<void> save() async {
-    await _repository.registerUser(_inputNickName, _inputEmail);
+    final repository = _read(settingRepositoryProvider);
+    await repository.registerUser(_inputNickName, _inputEmail);
   }
 }

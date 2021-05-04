@@ -1,24 +1,22 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/repository/remote/fake/fake_http_client.dart';
 import 'package:mybt/repository/remote/response/point_response.dart';
 import 'package:mybt/res/R.dart';
 
-class PointApi {
-  const PointApi._(this._httpClient);
+final pointApiProvider = Provider((ref) => _PointApi(ref.read));
 
-  factory PointApi.create() {
-    return PointApi._(FakeDio());
-  }
+class _PointApi {
+  const _PointApi(this._read);
 
-  final Dio _httpClient;
+  final Reader _read;
 
   Future<Point> find(String userId) async {
     final request = {'userId': userId};
 
-    final response = await _httpClient.get<Map<String, Object>>(
+    final response = await _read(httpClient).get<Map<String, Object>>(
       '${R.res.url.api}/point',
       queryParameters: request,
     );

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+///
+/// 現在の画面の前面にプログレスインジケータを表示する
+/// showメソッドの引数は、本当はコンストラクタでフィールドに設定しようと思ったが
+/// 実装時すぐshowを呼ぶのを忘れるので今の実装にした。
+///
 class AppProgressDialog<T> {
   const AppProgressDialog();
 

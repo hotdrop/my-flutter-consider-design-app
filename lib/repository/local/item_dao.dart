@@ -1,18 +1,20 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:mybt/models/item.dart';
 import 'package:mybt/repository/local/entities/item_entity.dart';
 
-class ItemDao {
-  ItemDao(this._box);
+final itemDaoProvider = Provider((ref) => _ItemDao());
 
-  final Box<ItemEntity> _box;
+class _ItemDao {
+  const _ItemDao();
 
-  List<Item> findAll() {
-    if (_box.isEmpty) {
+  Future<List<Item>> findAll() async {
+    final box = await Hive.openBox<ItemEntity>(ItemEntity.boxName);
+    if (box.isEmpty) {
       return [];
     }
 
-    final entities = _box.values;
+    final entities = box.values;
     return entities
         .map((e) => Item(
               name: e.name,
