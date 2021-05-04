@@ -4,6 +4,7 @@ import 'package:lifecycle/lifecycle.dart';
 import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
+import 'package:mybt/ui/pointget/point_get_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
@@ -176,7 +177,7 @@ class HomePage extends StatelessWidget {
             label: R.res.strings.homeMenuGetPoint,
             iconData: Icons.account_balance_wallet,
             onTap: () {
-              // TODO ポイント獲得ページへ
+              PointGetPage.start(context);
             },
           ),
           _MenuButton(

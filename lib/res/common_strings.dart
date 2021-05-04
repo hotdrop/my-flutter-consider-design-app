@@ -19,6 +19,8 @@ class CommonStrings {
   final String homeMenuGetPoint = 'ポイント取得';
   final String homeMenuBuyItem = 'アイテム購入';
 
+  final String pointGetTitle = 'ポイント取得';
+
   final String dialogCancel = 'キャンセル';
   final String dialogOk = 'OK';
 }

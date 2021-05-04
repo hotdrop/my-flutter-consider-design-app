@@ -12,6 +12,7 @@ class PointGetViewModel extends BaseViewModel {
 
   Point? _point;
   Point? get myPoint => _point;
+
   int _inpuPoint = 0;
 
   Future<void> init() async {

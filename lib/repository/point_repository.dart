@@ -18,7 +18,11 @@ class _PointRepository {
     return await pointApi.find(userId!);
   }
 
-  Future<void> pointGet(int input) async {
-    // TODO ポイント獲得
+  Future<void> pointGet(int inputPoint) async {
+    final dao = _read(settingDaoProvider);
+    final userId = await dao.getUserId();
+
+    final pointApi = _read(pointApiProvider);
+    await pointApi.acquired(userId!, inputPoint);
   }
 }

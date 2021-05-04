@@ -22,10 +22,26 @@ class _PointApi {
     );
 
     if (response.statusCode != 200) {
-      throw HttpException('ポイントの取得に失敗しました。');
+      throw HttpException('自身のポイント取得に失敗しました。');
     }
 
     final data = PointResponse.mapper(response.data!);
     return Point(data.point);
+  }
+
+  Future<void> acquired(String userId, int inputPoint) async {
+    final request = {'userId': userId, 'inputPoint': inputPoint};
+
+    final response = await _read(httpClient).post<Map<String, Object>>(
+      '${R.res.url.api}/point',
+      queryParameters: request,
+    );
+
+    if (response.statusCode != 200) {
+      throw HttpException('ポイント獲得に失敗しました。');
+    }
+
+    // 自身の保持ポイントを更新する
+    await _read(pointProvider.notifier).find();
   }
 }
