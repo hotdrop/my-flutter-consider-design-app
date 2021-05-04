@@ -23,11 +23,33 @@ class StartPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(R.res.strings.startTitle),
       ),
-      body: _viewBody(context),
+      body: Consumer(
+        builder: (context, watch, child) {
+          final uiState = watch(startViewModel).state;
+          return uiState.when(
+            loading: () => _onLoading(),
+            success: () => _onSuccess(context),
+            error: (String errorMsg) => _onError(errorMsg),
+          );
+        },
+      ),
     );
   }
 
-  Widget _viewBody(BuildContext context) {
+  Widget _onLoading() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
+  Widget _onError(String errorMsg) {
+    // このエラーは発生しない
+    return Center(
+      child: Text(errorMsg),
+    );
+  }
+
+  Widget _onSuccess(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(

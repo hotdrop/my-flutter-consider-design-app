@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifecycle/lifecycle.dart';
 import 'package:mybt/common/app_logger.dart';
-import 'package:mybt/models/app_settings.dart';
-import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
+import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
 class HomePage extends StatelessWidget {
@@ -31,7 +30,16 @@ class HomePage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-        body: _viewBody(context),
+        body: Consumer(
+          builder: (context, watch, child) {
+            final uiState = watch(homeViewModel).state;
+            return uiState.when(
+              loading: () => _viewBody(context, isLoading: true),
+              success: () => _viewBody(context, isLoading: false),
+              error: (String errorMsg) => _onError(context, errorMsg),
+            );
+          },
+        ),
       ),
     );
   }
@@ -46,18 +54,30 @@ class HomePage extends StatelessWidget {
     AppLogger.d('onStopが呼ばれた');
   }
 
-  Widget _viewBody(BuildContext context) {
+  Widget _onError(BuildContext context, String errorMsg) {
+    Future<void>.delayed(Duration.zero).then((value) {
+      AppDialog(
+        errorMsg,
+        onOk: () {},
+      ).show(context);
+    });
+    return Center(
+      child: Text('エラーです。'),
+    );
+  }
+
+  Widget _viewBody(BuildContext context, {bool isLoading = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _cardPoint(context),
+        _cardPoint(context, isLoading: isLoading),
         const SizedBox(height: 16),
         _viewMenuButton(context),
       ],
     );
   }
 
-  Widget _cardPoint(BuildContext context) {
+  Widget _cardPoint(BuildContext context, {bool isLoading = false}) {
     return Container(
       height: 230,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -72,13 +92,24 @@ class HomePage extends StatelessWidget {
                 fit: BoxFit.fill,
               ),
             ),
-            _currentDateOnCard(),
-            _pointOnCard(context),
-            _detailOnCard(),
+            if (isLoading) _cardPointLoading(),
+            if (!isLoading) ..._cardPointContent(context),
           ],
         ),
       ),
     );
+  }
+
+  Widget _cardPointLoading() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  List<Widget> _cardPointContent(BuildContext context) {
+    return [
+      _currentDateOnCard(),
+      _pointOnCard(context),
+      _detailOnCard(),
+    ];
   }
 
   Widget _currentDateOnCard() {
@@ -95,7 +126,7 @@ class HomePage extends StatelessWidget {
   Widget _pointOnCard(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
-        final point = watch(pointProvider);
+        final point = watch(homeViewModel).point;
         return Padding(
           padding: const EdgeInsets.only(top: 60),
           child: Row(
@@ -113,7 +144,7 @@ class HomePage extends StatelessWidget {
 
   Widget _detailOnCard() {
     return Consumer(builder: (context, watch, child) {
-      final appSettings = watch(appSettingsProvider);
+      final appSettings = watch(homeViewModel).appSetting;
       return Positioned(
         bottom: 16,
         left: 16,
