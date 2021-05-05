@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_setting.dart';
+import 'package:mybt/models/point.dart';
 import 'package:mybt/repository/local/local_data_source.dart';
 import 'package:mybt/ui/base_view_model.dart';
 
@@ -46,6 +47,7 @@ class SplashViewModel extends BaseViewModel {
       notifyListeners();
 
       // ここでホーム画面の表示に必要な処理を行う。
+      await _read(pointProvider.notifier).find();
       // 基本、ホーム画面に必要なデータはホーム画面のロード処理で行えば良いのでどうしても事前に必要な処理のみ行うのが望ましいと思う。
       // 一応何か処理をする前提で2秒程度delay入れる。
       await Future<void>.delayed(Duration(seconds: 2));
