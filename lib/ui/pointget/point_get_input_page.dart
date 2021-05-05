@@ -4,6 +4,8 @@ import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/pointget/point_get_confirm_page.dart';
 import 'package:mybt/ui/pointget/point_get_view_model.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
+import 'package:mybt/common/app_extension.dart';
+import 'package:mybt/ui/widgets/app_text.dart';
 
 class PointGetInputPage extends StatelessWidget {
   static void start(BuildContext context) {
@@ -55,9 +57,11 @@ class PointGetInputPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Column(
         children: [
-          Text('${R.res.strings.pointGetInputOverview}$holdPoint'),
+          AppText.normal('${R.res.strings.pointGetInputOverview}'),
+          AppText.large('$holdPoint'),
+          SizedBox(height: 4),
           Text(
-            '${R.res.strings.pointGetInputAttension}$maxHoldPoint${R.res.strings.pointGetInputAttensionSuffix}',
+            '${R.res.strings.pointGetInputAttension}'.embedded(<int>[maxHoldPoint]),
             style: Theme.of(context).textTheme.caption,
           ),
           SizedBox(height: 16),
