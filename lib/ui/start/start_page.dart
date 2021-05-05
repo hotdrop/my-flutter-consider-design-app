@@ -68,7 +68,7 @@ class StartPage extends StatelessWidget {
 
   Widget _textFieldNickName(BuildContext context) {
     return TextFormField(
-      textCapitalization: TextCapitalization.words,
+      keyboardType: TextInputType.name,
       decoration: InputDecoration(
         labelText: R.res.strings.startNickNameFieldLabel,
         hintText: R.res.strings.startNickNameFieldHint,
@@ -84,6 +84,7 @@ class StartPage extends StatelessWidget {
 
   Widget _textFieldEmail(BuildContext context) {
     return TextFormField(
+      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         labelText: R.res.strings.startEmailFieldLabel,
         hintText: R.res.strings.startEmailFieldHint,
@@ -98,9 +99,9 @@ class StartPage extends StatelessWidget {
   }
 
   Widget _buttonSave(BuildContext context) {
-    final viewModel = context.read(startViewModel);
     return ElevatedButton(
       onPressed: () async {
+        final viewModel = context.read(startViewModel);
         final dialog = AppProgressDialog<void>();
         await dialog.show(
           context,

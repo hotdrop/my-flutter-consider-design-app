@@ -58,17 +58,20 @@ class _FakeDio implements Dio {
       case 'https://fake.mybt.coffee.jp/api/v1/point':
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 1));
-
-        final sharedPrefs = await SharedPreferences.getInstance();
-        final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
-        final plusPoint = queryParameters?['inputPoint'] as int;
-        final pointKasan = currentPoint + plusPoint;
-        sharedPrefs.setInt(fakeLocalStorePointKey, pointKasan);
-
+        final point = queryParameters?['inputPoint'] as int;
+        acquirePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;
       default:
         throw UnimplementedError();
     }
+  }
+
+  Future<void> acquirePoint(int inputPoint) async {
+    final sharedPrefs = await SharedPreferences.getInstance();
+    final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
+    final pointKasan = currentPoint + inputPoint;
+    sharedPrefs.setInt(fakeLocalStorePointKey, pointKasan);
+    // TODO 履歴に登録する
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mybt/repository/local/entities/item_entity.dart';
+import 'package:mybt/repository/local/entities/history_entity.dart';
 
 final localDataSourceProvider = Provider((ref) => _LocalDataSource());
 
@@ -10,6 +10,6 @@ class _LocalDataSource {
 
   Future<void> init() async {
     await Hive.initFlutter();
-    Hive.registerAdapter(ItemEntityAdapter());
+    Hive.registerAdapter(HistoryEntityAdapter());
   }
 }
