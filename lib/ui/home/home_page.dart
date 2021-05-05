@@ -74,6 +74,8 @@ class HomePage extends StatelessWidget {
         _cardPoint(context, isLoading: isLoading),
         const SizedBox(height: 16),
         _viewMenuButton(context),
+        const SizedBox(height: 16),
+        _viewHistories(context),
       ],
     );
   }
@@ -181,7 +183,7 @@ class HomePage extends StatelessWidget {
             },
           ),
           _MenuButton(
-            label: R.res.strings.homeMenuBuyItem,
+            label: R.res.strings.homeMenuUsePoint,
             iconData: Icons.shopping_cart_outlined,
             onTap: () {
               // TODO ポイント利用ページへ
@@ -190,6 +192,31 @@ class HomePage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _viewHistories(BuildContext context) {
+    final histories = context.read(homeViewModel).histories;
+    if (histories == null || histories.isEmpty) {
+      return SizedBox();
+    } else {
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: histories.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            elevation: 2.0,
+            child: ListTile(
+              title: Text(histories[index].toStringDateTime()),
+              subtitle: Text(histories[index].detail),
+              trailing: Text(
+                '${histories[index].point} ${R.res.strings.pointUnit}',
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 }
 

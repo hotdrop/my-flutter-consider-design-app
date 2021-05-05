@@ -66,12 +66,13 @@ class _FakeDio implements Dio {
     }
   }
 
-  Future<void> acquirePoint(int inputPoint) async {
+  Future<void> acquirePoint(
+    int inputPoint,
+  ) async {
     final sharedPrefs = await SharedPreferences.getInstance();
     final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
     final pointKasan = currentPoint + inputPoint;
     sharedPrefs.setInt(fakeLocalStorePointKey, pointKasan);
-    // TODO 履歴に登録する
   }
 
   @override

@@ -16,8 +16,8 @@ class CommonStrings {
   final String homeTitle = 'ホーム';
   final String homeUnSettingNickname = 'ニックネーム未設定';
   final String homeUnSettingEmail = 'Email未設定';
-  final String homeMenuGetPoint = 'ポイント取得';
-  final String homeMenuBuyItem = 'アイテム購入';
+  final String homeMenuGetPoint = 'ポイント獲得';
+  final String homeMenuUsePoint = 'ポイント利用';
 
   final String pointGetTitle = 'ポイント獲得';
   final String pointGetInputOverview = '現在保持しているポイント数';
@@ -25,9 +25,11 @@ class CommonStrings {
   final String pointGetInputError = 'エラーです。';
   final String pointGetInputTextFieldHint = 'ポイントを入力';
   final String pointGetInputConfirmButton = '確認画面へ進む';
-  final String pointGetConfirmOverview = 'ポイントを取得します。\nよろしければ確定ボタンをタップしてください。';
-  final String pointGetConfirmPointLabel = '取得ポイント';
-  final String pointGetConfirmExecuteButton = 'ポイントを取得する';
+  final String pointGetConfirmOverview = 'ポイントを獲得します。\nよろしければ確定ボタンをタップしてください。';
+  final String pointGetConfirmPointLabel = '獲得ポイント';
+  final String pointGetConfirmExecuteButton = 'ポイントを獲得する';
+
+  final String pointHistoryAcquire = 'ポイント獲得';
 
   final String dialogCancel = 'キャンセル';
   final String dialogOk = 'OK';

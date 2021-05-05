@@ -13,6 +13,9 @@ class _PointApi {
 
   final Reader _read;
 
+  ///
+  /// ユーザーの保有ポイント取得
+  ///
   Future<Point> find(String userId) async {
     final request = {'userId': userId};
 
@@ -29,6 +32,9 @@ class _PointApi {
     return Point(data.point);
   }
 
+  ///
+  ///ポイント獲得
+  ///
   Future<void> acquired(String userId, int inputPoint) async {
     final request = {'userId': userId, 'inputPoint': inputPoint};
 
