@@ -25,7 +25,7 @@ class StartPage extends StatelessWidget {
       ),
       body: Consumer(
         builder: (context, watch, child) {
-          final uiState = watch(startViewModel).state;
+          final uiState = watch(startViewModel).uiState;
           return uiState.when(
             loading: () => _onLoading(),
             success: () => _onSuccess(context),

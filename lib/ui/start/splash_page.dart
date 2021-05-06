@@ -19,7 +19,7 @@ class SplashPage extends StatelessWidget {
       body: Consumer(
         builder: (context, watch, child) {
           final viewModel = watch(splashViewModel);
-          final uiState = viewModel.state;
+          final uiState = viewModel.uiState;
           return uiState.when(
             loading: () => _onLoading(context, userId: viewModel.userId),
             success: () => _onSuccess(context, appSetting: viewModel.appSetting),

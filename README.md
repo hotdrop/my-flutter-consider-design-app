@@ -1,25 +1,36 @@
 # mybt
-Flutterの設計検証を行うリポジトリ。
+Flutterの設計検証を行うリポジトリ
 
 # 設計概要
 View, ViewModel, Repositoryの3層構成とする。  
 - ViewModel
-  - `ChangeNotifierProvider`で実装。autoDisposeをつけ、参照が切れたら破棄する
+  - `ChangeNotifierProvider`で実装する。各業務フローでViewModelを共有し、そのフローが何らかの形で終了した場合は破棄したいのでautoDisposeをつける。
 - Model
-  - アプリ全体を通して使うもののみ`StateNotifier`で実装
+  - アプリ全体を通して使うもののみ`StateNotifier`で実装する。
 - Repository
-  - `Provider`で実装。コンストラクタにconstをつける（ミュータブルなフィールドを持たない）
+  - `Provider`で実装する。配下のlocalパッケージとremoteパッケージのクラスも同じ。
+  - LocalDBはHiveを使用しRemote通信はdioを使用する。ただ、実際のAPI通信は行わずDioClientはfake実装している。
+  - LocalDBで使うEntityやRemoteのResponseはアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にする。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするため）
 
 # ViewModelについて
-`StateNotifier`を使っていないのは画面に複数の状態を持ちたかったため。  
-カウンターアプリなど1種類の状態しかない場合は`StateNotifier`で良いが、商用プロダクトでは色々な入力フィールドが相互に絡み合うようなケースが多い。  
-ViewModelによって`ChangeNotifierProvider`と`StateNotifierProvider`を分けると統一感がなくなって混乱するし、画面の状態を全部持つUIModel的なクラスを作成するのも微妙だと思って`ChangeNotifierProvider`を採用した。
+`StateNotifier`を使っていないのは画面に複数の状態を持ち、かつ入力値をmutableで持ちたかったため。  
+カウンターアプリなど単純な状態管理なら`StateNotifier`で良いが、商用プロダクトでは色々な入力フィールドが相互に絡み合うようなケースが多い。  
+単に複数の状態を持つならUIModelのような画面データを集約したモデルクラスを作って`StateNotifier`でやりとりすれば良いが、頻繁に変更される入力フィールドやチェックボックスが多くある場合、StateNotifierにしてしまうとこんな設計になってしまうと思う。
+  1. `StateNotifier`のStateに画面の初期ロードデータを持ち、フィールドに入力データをもつ（mutableとimmutableの混在）
+  2. 意地でもStateに全て持つ
+
+自分は`StateNotifier`を使うなら2を採用するが、これで実装してみたらcopyWithメソッドの嵐になったのでちょっと立ち止まって検討することにした。  
+全画面が複雑なデータを持っているわけはなく（そういうアプリは多分UIを再検討すべき）ほとんどが簡易な画面なので、ならばViewModelによって`ChangeNotifierProvider`と`StateNotifierProvider`を分けるという選択肢もどうかなと思った。  
+しかし、この2つは結構使い勝手が違うので統一感がなくなって実装者が混乱してしまうと思い、じゃあどちらかに統一するならmutableを許容して`ChangeNotifierProvider`で行こうと考えた。  
+
 # 各画面のUIステータス
 その業務フローに入るメインの画面は必ずViewModelをもち、BaseViewModelを継承することにした。  
 （業務フローに入るメインの画面、というのは例えばAndroidでActivity＋複数Fragmentで画面フローを作る場合のActivityのこと）  
-BaseViewModelは`OnLoading,OnSuccess,OnError`の3つの状態をもち、View側でこれらの状態に応じたWidgetを生成する。  
+
+BaseViewModelは`OnLoading, OnSuccess, OnError`の3つの状態をもち、View側でこれらの状態に応じたWidgetを生成する。  
 初期状態は`OnLoading`になっているので、ViewModelは必ずinit処理を実装し`OnSuccess`か`OnError`に状態をうつす。  
-## 迷っていること
-freezedで状態クラスを生成しているが、状態の変更に`notifyListeners()`を呼ぶ必要があるのでBaseViewModelで各状態へ遷移するメソッドを用意している。protectedスコープがないのでViewからもこれらのメソッドを呼べてしまうのがモヤモヤしている。  
-`FutureBuilder`を使うことも検討したが、画面によっては特殊なことをしたいので各状態をViewModel側で制御できた方が都合が良いなと思った。
-`AsyncValue`を使ってもよかったが、画面起動処理に複数データが必要な場合はそれらをまとめたModelクラスを別途作る必要があるのがモヤモヤして採用は見送った。（ひょっとしたらこっちの方がいいかもしれない。）
+ただ、この実装はとてもモヤモヤしている。  
+freezedで状態クラスを生成しているから作成自体は楽だが、状態の変更に`notifyListeners()`を呼ぶ必要があるので忘れないよう`BaseViewModel`で各状態へ遷移するメソッドを用意している。  
+protectedスコープがないため、Viewからもこれらのメソッドを呼べてしまうしViewModelの処理内でもstateが見えてしまう。書き換えは出来ないのだが可読性が下がる様な気がしなくもない。悪あがきで`state`という変数名はやめてuiをつけている。  
+また、これらは画面起動時にしか呼ばず、メインの処理を実行する際はユーザーが画面に何らかのインプットをした後なので、これらの状態を使ってしまうとWidgetの再描画が行われて変な感じになる。（ProgressDialogの様なものを表示して画面は見えていた方がいいと思う）  
+そう考えると`FutureBuilder`の方が良いのか、もしくは`ChangeNotifierProvider`から見直す必要があるが`AsyncValue`を使った方がいいのか・・

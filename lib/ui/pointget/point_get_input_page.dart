@@ -22,7 +22,7 @@ class PointGetInputPage extends StatelessWidget {
       appBar: AppBar(title: Text(R.res.strings.pointGetTitle)),
       body: Consumer(
         builder: (context, watch, child) {
-          final uiState = watch(pointGetViewModel).state;
+          final uiState = watch(pointGetViewModel).uiState;
           return uiState.when(
             loading: () => _onLoading(),
             success: () => _onSuccess(context),

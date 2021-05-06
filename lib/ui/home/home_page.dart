@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lifecycle/lifecycle.dart';
 import 'package:mybt/common/app_logger.dart';
+import 'package:mybt/models/app_setting.dart';
+import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/pointget/point_get_input_page.dart';
@@ -33,7 +35,7 @@ class HomePage extends StatelessWidget {
         appBar: AppBar(title: Text(R.res.strings.homeTitle)),
         body: Consumer(
           builder: (context, watch, child) {
-            final uiState = watch(homeViewModel).state;
+            final uiState = watch(homeViewModel).uiState;
             return uiState.when(
               loading: () => _viewBody(context, isLoading: true),
               success: () => _viewBody(context, isLoading: false),
@@ -129,7 +131,7 @@ class HomePage extends StatelessWidget {
   Widget _pointOnCard(BuildContext context) {
     return Consumer(
       builder: (context, watch, child) {
-        final point = watch(homeViewModel).point;
+        final point = watch(pointProvider);
         return Padding(
           padding: const EdgeInsets.only(top: 60),
           child: Row(
@@ -147,7 +149,7 @@ class HomePage extends StatelessWidget {
 
   Widget _detailOnCard() {
     return Consumer(builder: (context, watch, child) {
-      final appSettings = watch(homeViewModel).appSetting;
+      final appSettings = watch(appSettingProvider);
       return Positioned(
         bottom: 16,
         left: 16,

@@ -5,21 +5,22 @@ import 'package:mybt/common/app_logger.dart';
 part 'base_view_model.freezed.dart';
 
 class BaseViewModel extends ChangeNotifier {
-  UIState state = OnLoading();
+  UIState _uiState = OnLoading();
+  UIState get uiState => _uiState;
 
   void nowLoading() {
-    state = OnLoading();
+    _uiState = OnLoading();
     notifyListeners();
   }
 
   void success() {
-    state = OnSuccess();
+    _uiState = OnSuccess();
     notifyListeners();
   }
 
   void error(String message, {Exception? exception, StackTrace? stackTrace}) {
     AppLogger.d('エラーメッセージ: $message, 例外情報: $exception, スタックトレース: $stackTrace');
-    state = OnError(message);
+    _uiState = OnError(message);
     notifyListeners();
   }
 }

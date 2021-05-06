@@ -7,13 +7,11 @@ import 'package:mybt/repository/point_repository.dart';
 import 'package:mybt/ui/base_view_model.dart';
 
 final homeViewModel = ChangeNotifierProvider.autoDispose((ref) {
-  final point = ref.watch(pointProvider);
-  final appSetting = ref.watch(appSettingProvider);
-  return HomeViewModel(ref.read, point, appSetting);
+  return HomeViewModel(ref.read);
 });
 
 class HomeViewModel extends BaseViewModel {
-  HomeViewModel(this._read, this.point, this.appSetting) {
+  HomeViewModel(this._read) {
     init();
   }
 
@@ -21,8 +19,6 @@ class HomeViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  Point point;
-  AppSetting appSetting;
   String get nowDateTimeStr => dateFormatter.format(DateTime.now());
 
   List<History>? _histories;
