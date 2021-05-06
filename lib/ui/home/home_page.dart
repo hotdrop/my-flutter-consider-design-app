@@ -7,6 +7,7 @@ import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/pointget/point_get_input_page.dart';
+import 'package:mybt/ui/pointuse/point_use_input_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
@@ -188,7 +189,7 @@ class HomePage extends StatelessWidget {
             label: R.res.strings.homeMenuUsePoint,
             iconData: Icons.shopping_cart_outlined,
             onTap: () {
-              // TODO ポイント利用ページへ
+              PointUseInputPage.start(context);
             },
           ),
         ],

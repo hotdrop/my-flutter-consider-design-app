@@ -50,4 +50,23 @@ class _PointApi {
     // 自身の保持ポイントを更新する
     await _read(pointProvider.notifier).find();
   }
+
+  ///
+  ///ポイント利用
+  ///
+  Future<void> use(String userId, int inputPoint) async {
+    final request = {'userId': userId, 'inputPoint': inputPoint};
+
+    final response = await _read(httpClient).post<Map<String, Object>>(
+      '${R.res.url.api}/point/use',
+      queryParameters: request,
+    );
+
+    if (response.statusCode != 200) {
+      throw HttpException('ポイント利用に失敗しました。');
+    }
+
+    // 自身の保持ポイントを更新する
+    await _read(pointProvider.notifier).find();
+  }
 }

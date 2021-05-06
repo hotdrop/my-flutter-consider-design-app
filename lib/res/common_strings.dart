@@ -31,7 +31,19 @@ class CommonStrings {
   final String pointGetConfirmPointLabel = '獲得ポイント';
   final String pointGetConfirmExecuteButton = 'ポイントを獲得する';
 
+  final String pointUseTitle = 'ポイント利用';
+  final String pointUseInputError = 'エラーです。';
+  final String pointUseInputOverview = '現在保持しているポイント数';
+  final String pointUseInputTextFieldHint = '利用ポイント入力';
+  final String pointUseInputTextFieldErrorOverPoint = '保有ポイントが不足しています。';
+  final String pointUseInputConfirmButton = '確認画面へ進む';
+  final String pointUseConfirmOverview = 'ポイントを使用します。';
+  final String pointUseConfirmDetail = 'よろしければ使用ボタンをタップしてください。';
+  final String pointUseConfirmPointLabel = '使用ポイント';
+  final String pointUseConfirmExecuteButton = 'ポイントを使用する';
+
   final String pointHistoryAcquire = 'ポイント獲得';
+  final String pointHistoryUse = 'ポイント使用';
 
   final String dialogCancel = 'キャンセル';
   final String dialogOk = 'OK';

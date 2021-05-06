@@ -2,12 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/point_repository.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/base_view_model.dart';
-import 'package:mybt/common/app_extension.dart';
 
-final pointGetViewModel = ChangeNotifierProvider.autoDispose((ref) => PointGetViewModel(ref.read));
+final pointUseViewModel = ChangeNotifierProvider.autoDispose((ref) => PointUseViewModel(ref.read));
 
-class PointGetViewModel extends BaseViewModel {
-  PointGetViewModel(this._read) {
+class PointUseViewModel extends BaseViewModel {
+  PointUseViewModel(this._read) {
     init();
   }
 
@@ -16,16 +15,13 @@ class PointGetViewModel extends BaseViewModel {
   late int _holdPoint;
   int get holdPoint => _holdPoint;
 
-  int _inputPoint = 0;
-  int get inputPoint => _inputPoint;
-
-  late int _availableMaxGetPoint;
+  int _usePoint = 0;
+  int get usePoint => _usePoint;
 
   Future<void> init() async {
     try {
       final myPoint = await _read(pointRepositoryProvider).find();
       _holdPoint = myPoint.balance;
-      _availableMaxGetPoint = R.res.integers.maxPoint - myPoint.balance;
       success();
     } on Exception catch (e, s) {
       error('エラー', exception: e, stackTrace: s);
@@ -35,9 +31,9 @@ class PointGetViewModel extends BaseViewModel {
   void input(String inputVal, bool isValidate) {
     int inputPoint = int.tryParse(inputVal) ?? 0;
     if (isValidate) {
-      _inputPoint = inputPoint;
+      _usePoint = inputPoint;
     } else {
-      _inputPoint = 0;
+      _usePoint = 0;
     }
     notifyListeners();
   }
@@ -48,14 +44,14 @@ class PointGetViewModel extends BaseViewModel {
       return null;
     }
 
-    if (inputPoint > _availableMaxGetPoint) {
-      return '${R.res.strings.pointGetInputTextFieldErrorOverMaxPoint}'.embedded(<int>[_availableMaxGetPoint]);
+    if (inputPoint > _holdPoint) {
+      return '${R.res.strings.pointUseInputTextFieldErrorOverPoint}';
     }
 
     return null;
   }
 
   Future<void> execute() async {
-    await _read(pointRepositoryProvider).pointGet(_inputPoint);
+    await _read(pointRepositoryProvider).pointUse(_usePoint);
   }
 }
