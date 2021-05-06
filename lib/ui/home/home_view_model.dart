@@ -46,6 +46,8 @@ class HomeViewModel extends BaseViewModel {
 
   Future<void> loadHistories() async {
     final repo = _read(pointRepositoryProvider);
-    _histories = await repo.findHistories();
+    final h = await repo.findHistories();
+    h.sort((s, v) => v.dateTime.compareTo(s.dateTime));
+    _histories = h;
   }
 }

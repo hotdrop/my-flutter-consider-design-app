@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/point_repository.dart';
+import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/base_view_model.dart';
+import 'package:mybt/common/app_extension.dart';
 
 final pointGetViewModel = ChangeNotifierProvider.autoDispose((ref) => PointGetViewModel(ref.read));
 
@@ -11,29 +13,28 @@ class PointGetViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  int? _holdPoint;
-  int? get holdPoint => _holdPoint;
+  late int _holdPoint;
+  int get holdPoint => _holdPoint;
 
   int _inputPoint = 0;
   int get inputPoint => _inputPoint;
 
-  String? _pointFieldErrorMessage;
-  String? get pointFieldErrorMessage => _pointFieldErrorMessage;
+  late int _availableMaxGetPoint;
 
   Future<void> init() async {
     try {
-      final repository = _read(pointRepositoryProvider);
-      final myPoint = await repository.find();
+      final myPoint = await _read(pointRepositoryProvider).find();
       _holdPoint = myPoint.balance;
+      _availableMaxGetPoint = R.res.integers.maxPoint - myPoint.balance;
       success();
     } on Exception catch (e, s) {
       error('エラー', exception: e, stackTrace: s);
     }
   }
 
-  void input(String inputStr, int maxPoint) {
-    int inputPoint = int.tryParse(inputStr) ?? 0;
-    if (_pointValidator(inputPoint, maxPoint)) {
+  void input(String inputVal, bool isValidate) {
+    int inputPoint = int.tryParse(inputVal) ?? 0;
+    if (isValidate) {
       _inputPoint = inputPoint;
     } else {
       _inputPoint = 0;
@@ -41,20 +42,17 @@ class PointGetViewModel extends BaseViewModel {
     notifyListeners();
   }
 
-  bool _pointValidator(int inputVal, int maxPoint) {
-    if (inputVal <= 0) {
-      // 未入力の場合はエラーを出さない
-      _pointFieldErrorMessage = null;
-      return false;
+  String? pointValidator(String? inputVal) {
+    int inputPoint = int.tryParse(inputVal ?? '0') ?? 0;
+    if (inputPoint <= 0) {
+      return null;
     }
 
-    if (inputVal > maxPoint) {
-      _pointFieldErrorMessage = '獲得できる最大ポイントは$maxPointです。';
-      return false;
+    if (inputPoint > _availableMaxGetPoint) {
+      return '${R.res.strings.pointGetInputTextFieldErrorOverMaxPoint}'.embedded(<int>[_availableMaxGetPoint]);
     }
 
-    _pointFieldErrorMessage = null;
-    return true;
+    return null;
   }
 
   Future<void> execute() async {

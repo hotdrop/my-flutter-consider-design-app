@@ -6,6 +6,7 @@ import 'package:mybt/ui/pointget/point_get_view_model.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/common/app_extension.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
+import 'package:mybt/ui/widgets/app_text_form_field.dart';
 
 class PointGetInputPage extends StatelessWidget {
   static void start(BuildContext context) {
@@ -51,8 +52,7 @@ class PointGetInputPage extends StatelessWidget {
   }
 
   Widget _onSuccess(BuildContext context) {
-    final maxHoldPoint = R.res.integers.maxPoint;
-    final holdPoint = context.read(pointGetViewModel).holdPoint!;
+    final holdPoint = context.read(pointGetViewModel).holdPoint;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Column(
@@ -61,12 +61,11 @@ class PointGetInputPage extends StatelessWidget {
           AppText.large('$holdPoint'),
           SizedBox(height: 4),
           Text(
-            '${R.res.strings.pointGetInputAttension}'.embedded(<int>[maxHoldPoint]),
+            '${R.res.strings.pointGetInputAttension}'.embedded(<int>[R.res.integers.maxPoint]),
             style: Theme.of(context).textTheme.caption,
           ),
           SizedBox(height: 16),
-          _textFieldPoint(context, maxHoldPoint - holdPoint),
-          _textFieldPointError(context),
+          _textFieldPoint(context),
           SizedBox(height: 16),
           _buttonNext(context),
         ],
@@ -74,30 +73,18 @@ class PointGetInputPage extends StatelessWidget {
     );
   }
 
-  Widget _textFieldPoint(BuildContext context, int availableGetPoint) {
+  Widget _textFieldPoint(BuildContext context) {
+    final viewModel = context.read(pointGetViewModel);
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 60),
-      child: TextFormField(
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          labelText: R.res.strings.pointGetInputTextFieldHint,
-        ),
-        style: TextStyle(fontSize: 32),
-        maxLength: 4,
-        onChanged: (String inputVal) {
-          context.read(pointGetViewModel).input(inputVal, availableGetPoint);
-        },
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 48),
+      child: AppTextFormField(
+          keyboardType: TextInputType.number,
+          label: R.res.strings.pointGetInputTextFieldHint,
+          textSize: 24,
+          maxLength: 4,
+          validator: (String? v) => viewModel.pointValidator(v),
+          onChanged: (String v, bool isValidate) => viewModel.input(v, isValidate)),
     );
-  }
-
-  Widget _textFieldPointError(BuildContext context) {
-    final errorLabel = context.read(pointGetViewModel).pointFieldErrorMessage;
-    if (errorLabel != null) {
-      return Text(errorLabel, style: TextStyle(color: Colors.red));
-    } else {
-      return SizedBox(height: 16);
-    }
   }
 
   Widget _buttonNext(BuildContext context) {

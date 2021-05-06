@@ -24,8 +24,10 @@ class CommonStrings {
   final String pointGetInputAttension = '(※最大で保持できるポイントは%d1です)';
   final String pointGetInputError = 'エラーです。';
   final String pointGetInputTextFieldHint = 'ポイントを入力';
+  final String pointGetInputTextFieldErrorOverMaxPoint = '獲得できる残ポイントは%d1までです。';
   final String pointGetInputConfirmButton = '確認画面へ進む';
-  final String pointGetConfirmOverview = 'ポイントを獲得します。\nよろしければ確定ボタンをタップしてください。';
+  final String pointGetConfirmOverview = 'ポイントを獲得します。';
+  final String pointGetConfirmDetail = 'よろしければ獲得ボタンをタップしてください。';
   final String pointGetConfirmPointLabel = '獲得ポイント';
   final String pointGetConfirmExecuteButton = 'ポイントを獲得する';
 
