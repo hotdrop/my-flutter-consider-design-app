@@ -13,6 +13,13 @@ class AppColors {
     );
   }
 
+  factory AppColors.createTea() {
+    return AppColors._(
+      themeColor: Color(0xFFA353C9),
+      accentColor: Color(0xFFB922C7),
+    );
+  }
+
   final Color themeColor;
   final Color accentColor;
 }

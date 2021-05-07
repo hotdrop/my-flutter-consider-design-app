@@ -7,5 +7,9 @@ class Strings extends CommonStrings {
     return Strings._(splashOverview: 'コーヒータイプのアプリです。');
   }
 
+  factory Strings.createTea() {
+    return Strings._(splashOverview: '紅茶タイプのアプリです。');
+  }
+
   final String splashOverview;
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mybt/flavors.dart';
 import 'package:mybt/res/app_url.dart';
 import 'package:mybt/res/colors.dart';
 import 'package:mybt/res/images.dart';
@@ -16,15 +17,30 @@ class R {
     required this.url,
   });
 
-  factory R.initAppCoffee() {
+  factory R.initCoffee() {
+    F.appFlavor = Flavor.coffee;
     final appColors = AppColors.createCoffee();
     res = R._(
-      theme: AppTheme.coffeeTheme(appColors),
+      theme: AppTheme.drinkTheme(appColors),
       strings: Strings.createCoffee(),
       images: Images.createCoffee(),
       colors: appColors,
       integers: Integers.createCoffee(),
       url: AppUrl.createCoffee(),
+    );
+    return res;
+  }
+
+  factory R.initTea() {
+    F.appFlavor = Flavor.tea;
+    final appColors = AppColors.createTea();
+    res = R._(
+      theme: AppTheme.drinkTheme(appColors),
+      strings: Strings.createTea(),
+      images: Images.createTea(),
+      colors: appColors,
+      integers: Integers.createTea(),
+      url: AppUrl.createTea(),
     );
     return res;
   }

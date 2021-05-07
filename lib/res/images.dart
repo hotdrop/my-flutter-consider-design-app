@@ -7,6 +7,10 @@ class Images {
     return Images._(rootPath: 'assets/app_coffee_images');
   }
 
+  factory Images.createTea() {
+    return Images._(rootPath: 'assets/app_tea_images');
+  }
+
   final String startImage;
   final String homePointCard;
 }

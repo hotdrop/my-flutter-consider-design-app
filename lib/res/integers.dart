@@ -7,5 +7,11 @@ class Integers {
     );
   }
 
+  factory Integers.createTea() {
+    return Integers._(
+      maxPoint: 4500,
+    );
+  }
+
   final int maxPoint;
 }
