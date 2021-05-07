@@ -36,12 +36,6 @@ protectedスコープがないため、Viewからもこれらのメソッドを�
 また、これらは画面起動時にしか呼ばず、メインの処理を実行する際はユーザーが画面に何らかのインプットをした後なので、これらの状態を使ってしまうとWidgetの再描画が行われて変な感じになる。（ProgressDialogの様なものを表示して画面は見えていた方がいいと思う）  
 そう考えると`FutureBuilder`の方が良いのか、もしくは`ChangeNotifierProvider`から見直す必要があるが`AsyncValue`を使った方がいいのか・・
 
-# flutter_flavorizr
-フレーバーの検証もしたかったので`flutter_flavorizr`ライブラリを使ってコーヒーアプリ環境と紅茶アプリ環境をそれぞれ作成した。
-実行コマンドはそれぞれ以下の通り。
-- flutter run --flavor coffee -t lib/main-coffee.dart
-- flutter run --flavor tea -t lib/main-tea.dart
-
 # その他
 ## import文について
 EffectiveDartには相対パスが望ましいかもと記載があるが強く推奨しているわけではない。  
@@ -57,3 +51,9 @@ EffectiveDartには相対パスが望ましいかもと記載があるが強く�
 本当は1がいいのだろうが、長いので右辺で型が明確な場合はせっかく推論機能もあるし3か4が良いと思う。  
 kotlinのvalが採用されていれば迷いなくこれだったのだが、ローカルかつスコープが短ければ可読性に全振りして3でも良いのかなと思った。
 ただ、個人的にいつもの癖があるのでこのアプリでは4で行くことにした。（型が完全に不明で可読性に問題があると判断した場合は1も使う）
+
+## flutter_flavorizr
+Flavorの検証もしたかったので`flutter_flavorizr`ライブラリを使ってコーヒーアプリ環境と紅茶アプリ環境をそれぞれ作成した。
+実行コマンドはそれぞれ以下の通り。
+- flutter run --flavor coffee -t lib/main-coffee.dart
+- flutter run --flavor tea -t lib/main-tea.dart
