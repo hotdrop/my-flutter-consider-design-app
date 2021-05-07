@@ -157,6 +157,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // これらの項目を編集する画面がないので本当は作成した方がいい
             _labelOnCard(appSettings.nickName ?? R.res.strings.homeUnSettingNickname),
             _labelOnCard(appSettings.email ?? R.res.strings.homeUnSettingEmail),
           ],
@@ -200,24 +201,27 @@ class HomePage extends StatelessWidget {
   Widget _viewHistories(BuildContext context) {
     final histories = context.read(homeViewModel).histories;
     if (histories == null || histories.isEmpty) {
+      // 「ポイント利用/獲得履歴はありません」というラベルを表示した方がいい。
       return SizedBox();
     } else {
-      return ListView.builder(
-        shrinkWrap: true,
-        itemCount: histories.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            elevation: 2.0,
-            child: ListTile(
-              title: Text(histories[index].toStringDateTime()),
-              subtitle: Text(histories[index].detail),
-              trailing: Text(
-                '${histories[index].point} ${R.res.strings.pointUnit}',
-                style: TextStyle(fontSize: 20),
+      return Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: histories.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Card(
+              elevation: 2.0,
+              child: ListTile(
+                title: Text(histories[index].toStringDateTime()),
+                subtitle: Text(histories[index].detail),
+                trailing: Text(
+                  '${histories[index].point} ${R.res.strings.pointUnit}',
+                  style: TextStyle(fontSize: 20),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       );
     }
   }
