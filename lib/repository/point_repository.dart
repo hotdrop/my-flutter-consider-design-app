@@ -14,11 +14,8 @@ class _PointRepository {
   final Reader _read;
 
   Future<Point> find() async {
-    final dao = _read(settingDaoProvider);
-    final userId = await dao.getUserId();
-
-    final pointApi = _read(pointApiProvider);
-    return await pointApi.find(userId!);
+    final userId = await _read(settingDaoProvider).getUserId();
+    return await _read(pointApiProvider).find(userId!);
   }
 
   Future<void> pointGet(int inputPoint) async {
@@ -40,7 +37,6 @@ class _PointRepository {
   }
 
   Future<List<History>> findHistories() async {
-    final dao = _read(historyDaoProvider);
-    return await dao.findAll();
+    return await _read(historyDaoProvider).findAll();
   }
 }

@@ -8,10 +8,12 @@ import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/app_text_form_field.dart';
 
 class PointUseInputPage extends StatelessWidget {
+  PointUseInputPage._();
+
   static void start(BuildContext context) {
     Navigator.push<void>(
       context,
-      MaterialPageRoute(builder: (context) => PointUseInputPage()),
+      MaterialPageRoute(builder: (context) => PointUseInputPage._()),
     );
   }
 
@@ -34,7 +36,7 @@ class PointUseInputPage extends StatelessWidget {
 
   Widget _onLoading() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(),
     );
   }
 
@@ -51,7 +53,8 @@ class PointUseInputPage extends StatelessWidget {
   }
 
   ///
-  /// TODO とりあえずポイント獲得と同じUIにしているがアイテムを選んで購入するというUIにしたい
+  /// TODO ポイント利用のUI改善
+  /// とりあえずポイント獲得と同じUIにしているがアイテムを選んで購入するというUIにしたい
   /// そうすると購入アイテム一蘭も必要になって来るのでまた別途検討する
   ///
   Widget _onSuccess(BuildContext context) {
@@ -63,9 +66,9 @@ class PointUseInputPage extends StatelessWidget {
           children: [
             AppText.normal('${R.res.strings.pointUseInputOverview}'),
             AppText.large('$holdPoint'),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _textFieldPoint(context),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             _buttonNext(context),
           ],
         ),

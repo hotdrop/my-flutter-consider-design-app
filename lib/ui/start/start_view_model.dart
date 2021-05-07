@@ -29,7 +29,6 @@ class StartViewModel extends BaseViewModel {
   }
 
   Future<void> save() async {
-    final repository = _read(settingRepositoryProvider);
-    await repository.registerUser(_inputNickName, _inputEmail);
+    await _read(settingRepositoryProvider).registerUser(_inputNickName, _inputEmail);
   }
 }

@@ -9,10 +9,12 @@ import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/app_text_form_field.dart';
 
 class PointGetInputPage extends StatelessWidget {
+  PointGetInputPage._();
+
   static void start(BuildContext context) {
     Navigator.push<void>(
       context,
-      MaterialPageRoute(builder: (context) => PointGetInputPage()),
+      MaterialPageRoute(builder: (context) => PointGetInputPage._()),
     );
   }
 
@@ -35,7 +37,7 @@ class PointGetInputPage extends StatelessWidget {
 
   Widget _onLoading() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: const CircularProgressIndicator(),
     );
   }
 
@@ -59,14 +61,14 @@ class PointGetInputPage extends StatelessWidget {
         children: [
           AppText.normal('${R.res.strings.pointGetInputOverview}'),
           AppText.large('$holdPoint'),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             '${R.res.strings.pointGetInputAttension}'.embedded(<int>[R.res.integers.maxPoint]),
             style: Theme.of(context).textTheme.caption,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _textFieldPoint(context),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _buttonNext(context),
         ],
       ),

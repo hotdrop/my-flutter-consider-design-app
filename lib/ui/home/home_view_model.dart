@@ -34,15 +34,15 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> onRefresh() async {
-    await _read(pointProvider.notifier).find();
-    await _read(appSettingProvider.notifier).refresh();
+    _read(pointProvider.notifier).find();
+    _read(appSettingProvider.notifier).refresh();
+
     await loadHistories();
     notifyListeners();
   }
 
   Future<void> loadHistories() async {
-    final repo = _read(pointRepositoryProvider);
-    final h = await repo.findHistories();
+    final h = await _read(pointRepositoryProvider).findHistories();
     h.sort((s, v) => v.dateTime.compareTo(s.dateTime));
     _histories = h;
   }

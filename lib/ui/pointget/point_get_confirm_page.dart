@@ -8,10 +8,12 @@ import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/progress_dialog.dart';
 
 class PointGetConfirmPage extends StatelessWidget {
+  PointGetConfirmPage._();
+
   static void start(BuildContext context) {
     Navigator.push<void>(
       context,
-      MaterialPageRoute(builder: (_) => PointGetConfirmPage()),
+      MaterialPageRoute(builder: (_) => PointGetConfirmPage._()),
     );
   }
 
@@ -30,10 +32,10 @@ class PointGetConfirmPage extends StatelessWidget {
         children: [
           Center(child: Text(R.res.strings.pointGetConfirmOverview)),
           Center(child: Text(R.res.strings.pointGetConfirmDetail)),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           AppText.large(R.res.strings.pointGetConfirmPointLabel),
           _textGetPoint(context),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           _buttonDecision(context),
         ],
       ),

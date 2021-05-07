@@ -69,7 +69,7 @@ class SplashPage extends StatelessWidget {
       ).show(context);
     });
     return Center(
-      child: Text('エラーです。アプリを再度実行してください。'),
+      child: Text(R.res.strings.splashErrorLabel),
     );
   }
 

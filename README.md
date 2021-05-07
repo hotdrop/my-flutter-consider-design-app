@@ -4,16 +4,16 @@ Flutterの設計検証を行うリポジトリ
 # 設計概要
 View, ViewModel, Repositoryの3層構成とする。  
 - ViewModel
-  - `ChangeNotifierProvider`で実装する。各業務フローでViewModelを共有し、そのフローが何らかの形で終了した場合は破棄したいのでautoDisposeをつける。
+  - `ChangeNotifier`で実装し`ChangeNotifierProvder`でアクセスする。各業務フローでViewModelを共有し、そのフローが何らかの形で終了した場合は破棄したいのでautoDisposeをつける。
 - Model
-  - アプリ全体を通して使うもののみ`StateNotifier`で実装する。
+  - アプリ全体を通して使うもののみ`StateNotifier`で実装し、`StateNotifierProvider`でアクセスする。それ以外は通常のクラスで実装する。
 - Repository
-  - `Provider`で実装する。配下のlocalパッケージとremoteパッケージのクラスも同じ。
+  - 通常のクラスとして実装し`Provider`でアクセスする。配下のlocalパッケージとremoteパッケージのクラスも同じ。
   - LocalDBはHiveを使用しRemote通信はdioを使用する。ただ、実際のAPI通信は行わずDioClientはfake実装している。
   - LocalDBで使うEntityやRemoteのResponseはアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にする。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするため）
 
 # ViewModelについて
-`StateNotifier`を使っていないのは画面に複数の状態を持ち、かつ入力値をmutableで持ちたかったため。  
+`StateNotifier`を使っていないのは画面に複数の状態を持ち、かつ入力値をmutableで持っても良いかなと思ったため。  
 カウンターアプリなど単純な状態管理なら`StateNotifier`で良いが、商用プロダクトでは色々な入力フィールドが相互に絡み合うようなケースが多い。  
 単に複数の状態を持つならUIModelのような画面データを集約したモデルクラスを作って`StateNotifier`でやりとりすれば良いが、頻繁に変更される入力フィールドやチェックボックスが多くある場合、StateNotifierにしてしまうとこんな設計になってしまうと思う。
   1. `StateNotifier`のStateに画面の初期ロードデータを持ち、フィールドに入力データをもつ（mutableとimmutableの混在）
@@ -34,3 +34,19 @@ freezedで状態クラスを生成しているから作成自体は楽だが、�
 protectedスコープがないため、Viewからもこれらのメソッドを呼べてしまうしViewModelの処理内でもstateが見えてしまう。書き換えは出来ないのだが可読性が下がる様な気がしなくもない。悪あがきで`state`という変数名はやめてuiをつけている。  
 また、これらは画面起動時にしか呼ばず、メインの処理を実行する際はユーザーが画面に何らかのインプットをした後なので、これらの状態を使ってしまうとWidgetの再描画が行われて変な感じになる。（ProgressDialogの様なものを表示して画面は見えていた方がいいと思う）  
 そう考えると`FutureBuilder`の方が良いのか、もしくは`ChangeNotifierProvider`から見直す必要があるが`AsyncValue`を使った方がいいのか・・
+
+# その他
+## import文について
+EffectiveDartには相対パスが望ましいかもと記載があるが強く推奨しているわけではない。  
+個人的に相対パスは紛らわしいことと、拡張機能で自動importするとpackage記載になるので一貫性を保つため全てpackage記載にしている。  
+参考: https://stackoverflow.com/questions/59693195/flutter-imports-relative-path-or-package  
+## ローカル変数について
+どれにするか迷った。
+1. final [型] argName;
+2. [型] argName;
+3. var argName;
+4. final argName;
+
+本当は1がいいのだろうが、長いので右辺で型が明確な場合はせっかく推論機能もあるし3か4が良いと思う。  
+kotlinのvalが採用されていれば迷いなくこれだったのだが、ローカルかつスコープが短ければ可読性に全振りして3でも良いのかなと思った。
+ただ、個人的にいつもの癖があるのでこのアプリでは4で行くことにした。（型が完全に不明で可読性に問題があると判断した場合は1も使う）

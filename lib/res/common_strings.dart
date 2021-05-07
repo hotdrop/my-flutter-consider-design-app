@@ -4,6 +4,7 @@ class CommonStrings {
   final String splashTitle = '起動';
   final String splashUserIDLabel = 'ユーザーID: ';
   final String splashFirstTimeButton = 'はじめる';
+  final String splashErrorLabel = 'エラーです。アプリを再度実行してください。';
 
   final String startTitle = 'はじめに';
   final String startOverview = 'ユーザー情報を登録します。嫌だったら入力せずに進んでください。';

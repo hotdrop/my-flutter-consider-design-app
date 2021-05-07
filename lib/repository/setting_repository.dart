@@ -25,11 +25,9 @@ class _SettingRepository {
 
   Future<void> registerUser(String? nickname, String? email) async {
     AppLogger.d('これらの値を保存します: ニックネーム=$nickname メールアドレス: $email');
-    final userApi = _read(userApiProvider);
-    final user = await userApi.create(nickname, email);
+    final user = await _read(userApiProvider).create(nickname, email);
 
-    final settingDao = _read(settingDaoProvider);
-    settingDao.save(userId: user.id, nickName: nickname, email: email);
+    await _read(settingDaoProvider).save(userId: user.id, nickName: nickname, email: email);
     AppLogger.d('保存完了しました。 生成UserID=${user.id}');
 
     // メモリで持っているアプリ設定情報も更新する

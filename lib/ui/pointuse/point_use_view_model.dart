@@ -29,7 +29,7 @@ class PointUseViewModel extends BaseViewModel {
   }
 
   void input(String inputVal, bool isValidate) {
-    int inputPoint = int.tryParse(inputVal) ?? 0;
+    final inputPoint = int.tryParse(inputVal) ?? 0;
     if (isValidate) {
       _usePoint = inputPoint;
     } else {
@@ -39,7 +39,7 @@ class PointUseViewModel extends BaseViewModel {
   }
 
   String? pointValidator(String? inputVal) {
-    int inputPoint = int.tryParse(inputVal ?? '0') ?? 0;
+    final inputPoint = int.tryParse(inputVal ?? '0') ?? 0;
     if (inputPoint <= 0) {
       return null;
     }
