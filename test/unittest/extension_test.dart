@@ -13,9 +13,9 @@ void main() {
     expect(result, 'テストアイウエオ');
   });
   test('埋め込み文字に数値が複数指定できる', () {
-    final str = '私の戦闘力は%d1です。フロストは%d2です。';
-    final result = str.embedded(<int>[530000, 200]);
-    expect(result, '私の戦闘力は530000です。フロストは200です。');
+    final str = '私の戦闘力は%d1です。ギニュー隊長は%d2です。';
+    final result = str.embedded(<int>[530000, 120000]);
+    expect(result, '私の戦闘力は530000です。ギニュー隊長は120000です。');
   });
   test('埋め込み文字に文字列が複数指定できる', () {
     final str = '%s1は%s2が使える。';

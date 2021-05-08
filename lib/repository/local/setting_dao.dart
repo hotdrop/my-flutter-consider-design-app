@@ -1,10 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final settingDaoProvider = Provider((ref) => _SettingDao());
+final settingDaoProvider = Provider((ref) => SettingDao());
 
-class _SettingDao {
-  const _SettingDao();
+class SettingDao {
+  const SettingDao();
 
   static const _userIdKey = 'key001';
   static const _nickNameKey = 'key002';

@@ -41,6 +41,8 @@ dev_dependencies:
   json_serializable: ^4.1.1
   hive_generator: ^1.1.0
 
+  mockito: ^5.0.7
+
   pedantic: ^1.11.0
   build_runner: ^2.0.1
 

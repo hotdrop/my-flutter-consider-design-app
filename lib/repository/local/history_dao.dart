@@ -4,10 +4,10 @@ import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/repository/local/entities/history_entity.dart';
 
-final historyDaoProvider = Provider((ref) => _HistoryDao());
+final historyDaoProvider = Provider((ref) => HistoryDao());
 
-class _HistoryDao {
-  const _HistoryDao();
+class HistoryDao {
+  const HistoryDao();
 
   Future<List<History>> findAll() async {
     final box = await Hive.openBox<HistoryEntity>(HistoryEntity.boxName);

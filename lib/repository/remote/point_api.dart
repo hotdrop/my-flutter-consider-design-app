@@ -6,10 +6,10 @@ import 'package:mybt/repository/remote/fake/fake_http_client.dart';
 import 'package:mybt/repository/remote/response/point_response.dart';
 import 'package:mybt/res/R.dart';
 
-final pointApiProvider = Provider((ref) => _PointApi(ref.read));
+final pointApiProvider = Provider((ref) => PointApi(ref.read));
 
-class _PointApi {
-  const _PointApi(this._read);
+class PointApi {
+  const PointApi(this._read);
 
   final Reader _read;
 

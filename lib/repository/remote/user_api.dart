@@ -6,10 +6,10 @@ import 'package:mybt/repository/remote/fake/fake_http_client.dart';
 import 'package:mybt/repository/remote/response/user_response.dart';
 import 'package:mybt/res/R.dart';
 
-final userApiProvider = Provider((ref) => _UserApi(ref.read));
+final userApiProvider = Provider((ref) => UserApi(ref.read));
 
-class _UserApi {
-  const _UserApi(this._read);
+class UserApi {
+  const UserApi(this._read);
 
   final Reader _read;
 

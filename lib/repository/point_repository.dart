@@ -6,10 +6,10 @@ import 'package:mybt/repository/local/setting_dao.dart';
 import 'package:mybt/repository/remote/point_api.dart';
 import 'package:mybt/res/R.dart';
 
-final pointRepositoryProvider = Provider((ref) => _PointRepository(ref.read));
+final pointRepositoryProvider = Provider((ref) => PointRepository(ref.read));
 
-class _PointRepository {
-  const _PointRepository(this._read);
+class PointRepository {
+  const PointRepository(this._read);
 
   final Reader _read;
 

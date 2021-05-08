@@ -6,10 +6,10 @@ import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/repository/local/setting_dao.dart';
 import 'package:mybt/repository/remote/user_api.dart';
 
-final settingRepositoryProvider = Provider((ref) => _SettingRepository(ref.read));
+final settingRepositoryProvider = Provider((ref) => SettingRepository(ref.read));
 
-class _SettingRepository {
-  const _SettingRepository(this._read);
+class SettingRepository {
+  const SettingRepository(this._read);
 
   final Reader _read;
 
