@@ -48,3 +48,4 @@ app.*.map.json
 # generate by build
 *.freezed.dart
 *.g.dart
+*.mocks.dart

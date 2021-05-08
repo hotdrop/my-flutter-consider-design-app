@@ -77,7 +77,7 @@ class StartPage extends StatelessWidget {
         ),
       ),
       onChanged: (String value) {
-        context.read(startViewModel).inputEmail(value);
+        context.read(startViewModel).inputNickName(value);
       },
     );
   }
