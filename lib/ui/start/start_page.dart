@@ -68,7 +68,7 @@ class StartPage extends StatelessWidget {
 
   Widget _textFieldNickName(BuildContext context) {
     return TextFormField(
-      keyboardType: TextInputType.name,
+      keyboardType: TextInputType.text,
       decoration: InputDecoration(
         labelText: R.res.strings.startNickNameFieldLabel,
         hintText: R.res.strings.startNickNameFieldHint,
