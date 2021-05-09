@@ -4,6 +4,11 @@ Flutterでアプリを作成する際の設計を検討するアプリ。
 アプリ名のmybtは「my brue print test app」からとったもの。  
 単純に頭文字のmbptaだと微妙なのでいろいろ考えてmybtとした。今考えるとそもそも元となった英文が微妙であった。
 
+# アプリ概要
+miroで作成した画面フローのスクリーンショット  
+![01_start](./screenshot/01_起動処理フロー.png)  
+![02_business](./screenshot/02_ポイント獲得と利用フロー.png)
+
 # 設計概要
 View, ViewModel, Repositoryの3層構成とする。  
 - ViewModel
