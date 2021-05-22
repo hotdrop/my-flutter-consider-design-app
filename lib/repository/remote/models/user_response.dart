@@ -7,9 +7,9 @@ part 'user_response.g.dart';
 abstract class UserResponse with _$UserResponse {
   factory UserResponse(String userId) = _UserResponse;
 
-  factory UserResponse.fromJson(Map<String, Object> json) => _$UserResponseFromJson(json);
+  factory UserResponse.fromJson(Map<String, Object?> json) => _$UserResponseFromJson(json);
 
-  static UserResponse mapper(Map<String, Object> response) {
+  static UserResponse mapper(Map<String, Object?> response) {
     return UserResponse.fromJson(response);
   }
 }

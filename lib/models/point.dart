@@ -10,7 +10,7 @@ class PointNotifier extends StateNotifier<Point> {
 
   final Reader _read;
 
-  Future<void> find() async {
+  Future<void> refresh() async {
     final repository = _read(pointRepositoryProvider);
     state = await repository.find();
   }

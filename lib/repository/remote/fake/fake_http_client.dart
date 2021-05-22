@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mybt/common/app_logger.dart';
+import 'package:mybt/res/R.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'fake_http_client.g.dart';
@@ -9,9 +12,26 @@ part 'fake_http_client.g.dart';
 @JsonLiteral('fake_coffee_user.json')
 final _fakeCoffeeUser = _$_fakeCoffeeUserJsonLiteral;
 
-final httpClient = Provider((ref) => _FakeDio());
+final dioProvider = Provider((ref) => _FakeDio.create());
 
 class _FakeDio implements Dio {
+  const _FakeDio._();
+
+  factory _FakeDio.create() {
+    final options = BaseOptions(
+      baseUrl: R.res.url.api,
+      connectTimeout: 5000,
+      receiveTimeout: 3000,
+      headers: <String, String>{
+        HttpHeaders.userAgentHeader: 'dio',
+        'Content-Type': 'application/json',
+      },
+    );
+    final dio = _FakeDio._();
+    dio.options = options;
+    return dio;
+  }
+
   static const String fakeCoffeeUserID = '4d58da01395bcaf9';
   static const String fakeLocalStorePointKey = 'key101';
 
@@ -59,27 +79,27 @@ class _FakeDio implements Dio {
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 1));
         final point = queryParameters?['inputPoint'] as int;
-        acquirePoint(point);
+        _acquirePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;
       case 'https://fake.mybt.coffee.jp/api/v1/point/use':
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 1));
         final point = queryParameters?['inputPoint'] as int;
-        usePoint(point);
+        _usePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;
       default:
         throw UnimplementedError();
     }
   }
 
-  Future<void> acquirePoint(int inputPoint) async {
+  Future<void> _acquirePoint(int inputPoint) async {
     final sharedPrefs = await SharedPreferences.getInstance();
     final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
     final p = currentPoint + inputPoint;
     sharedPrefs.setInt(fakeLocalStorePointKey, p);
   }
 
-  Future<void> usePoint(int inputPoint) async {
+  Future<void> _usePoint(int inputPoint) async {
     final sharedPrefs = await SharedPreferences.getInstance();
     final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
     final p = currentPoint - inputPoint;

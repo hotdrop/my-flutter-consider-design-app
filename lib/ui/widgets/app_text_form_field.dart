@@ -56,6 +56,7 @@ class _AppTextFormFieldState extends State<AppTextFormField> {
     if (_errorMsg != null) {
       return Text(_errorMsg!, style: TextStyle(color: Colors.red));
     } else {
+      // TODO Opacityで対応した方が良さそう
       return SizedBox(height: 16);
     }
   }

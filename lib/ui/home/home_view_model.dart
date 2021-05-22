@@ -34,7 +34,7 @@ class HomeViewModel extends BaseViewModel {
   }
 
   Future<void> onRefresh() async {
-    _read(pointProvider.notifier).find();
+    _read(pointProvider.notifier).refresh();
     _read(appSettingProvider.notifier).refresh();
 
     await loadHistories();

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/repository/local/setting_dao.dart';
-import 'package:mybt/repository/remote/user_api.dart';
+import 'package:mybt/repository/remote/api/user_api.dart';
 
 final settingRepositoryProvider = Provider((ref) => SettingRepository(ref.read));
 
