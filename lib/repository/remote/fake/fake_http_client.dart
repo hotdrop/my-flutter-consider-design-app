@@ -12,25 +12,22 @@ part 'fake_http_client.g.dart';
 @JsonLiteral('fake_coffee_user.json')
 final _fakeCoffeeUser = _$_fakeCoffeeUserJsonLiteral;
 
-final dioProvider = Provider((ref) => _FakeDio.create());
+final dioProvider = Provider((ref) {
+  final options = BaseOptions(
+    baseUrl: R.res.url.api,
+    connectTimeout: 5000,
+    receiveTimeout: 3000,
+    headers: <String, String>{
+      HttpHeaders.userAgentHeader: 'dio',
+      'Content-Type': 'application/json',
+    },
+  );
+  final dio = _FakeDio(options);
+  return dio;
+});
 
 class _FakeDio implements Dio {
-  const _FakeDio._();
-
-  factory _FakeDio.create() {
-    final options = BaseOptions(
-      baseUrl: R.res.url.api,
-      connectTimeout: 5000,
-      receiveTimeout: 3000,
-      headers: <String, String>{
-        HttpHeaders.userAgentHeader: 'dio',
-        'Content-Type': 'application/json',
-      },
-    );
-    final dio = _FakeDio._();
-    dio.options = options;
-    return dio;
-  }
+  _FakeDio(this.options);
 
   static const String fakeCoffeeUserID = '4d58da01395bcaf9';
   static const String fakeLocalStorePointKey = 'key101';
@@ -43,13 +40,13 @@ class _FakeDio implements Dio {
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress,
   }) async {
-    AppLogger.d('$path をgetで叩きます。');
+    AppLogger.d('${this.options.baseUrl}$path をgetで叩きます。');
     switch (path) {
-      case 'https://fake.mybt.coffee.jp/api/v1/user/$fakeCoffeeUserID':
+      case '/user/$fakeCoffeeUserID':
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 1));
         return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
-      case 'https://fake.mybt.coffee.jp/api/v1/point':
+      case '/point':
         final sharedPrefs = await SharedPreferences.getInstance();
         final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
         // 通信してるっぽくしたいのでdelayをさせる
@@ -69,22 +66,22 @@ class _FakeDio implements Dio {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
-    AppLogger.d('$path をpostで叩きます。data=$data');
+    AppLogger.d('${this.options.baseUrl}$path をpostで叩きます。data=$data');
     switch (path) {
-      case 'https://fake.mybt.coffee.jp/api/v1/user':
+      case '/user':
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 2));
         return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
-      case 'https://fake.mybt.coffee.jp/api/v1/point':
+      case '/point':
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 1));
-        final point = queryParameters?['inputPoint'] as int;
+        final point = data?['inputPoint'] as int;
         _acquirePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;
-      case 'https://fake.mybt.coffee.jp/api/v1/point/use':
+      case '/point/use':
         // 通信してるっぽくしたいのでdelayをさせる
         await Future<void>.delayed(Duration(seconds: 1));
-        final point = queryParameters?['inputPoint'] as int;
+        final point = data?['inputPoint'] as int;
         _usePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;
       default:
@@ -107,16 +104,22 @@ class _FakeDio implements Dio {
   }
 
   @override
+  BaseOptions options;
+
+  @override
   void noSuchMethod(Invocation invocation) {
     throw UnimplementedError();
   }
 }
 
 class FakeResponse implements Response<Map<String, Object>> {
-  FakeResponse(this.data, {required this.statusCode});
+  FakeResponse(this.data, {required this.statusCode}) : extra = data;
 
   @override
   final Map<String, Object> data;
+
+  @override
+  Map<String, dynamic> extra;
 
   @override
   int? statusCode;

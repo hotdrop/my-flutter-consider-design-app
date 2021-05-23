@@ -15,9 +15,9 @@ class HttpClient {
   Future<Map<String, Object?>> get(String endpoint, {Request? request}) async {
     Response response;
     if (request == null) {
-      response = await _read(dioProvider).get<Response>(endpoint);
+      response = await _read(dioProvider).get<Map<String, Object?>>(endpoint);
     } else {
-      response = await _read(dioProvider).get<Response>(endpoint, queryParameters: request.urlParam());
+      response = await _read(dioProvider).get<Map<String, Object?>>(endpoint, queryParameters: request.urlParam());
     }
 
     if (response.statusCode != HttpStatus.ok) {
@@ -28,7 +28,7 @@ class HttpClient {
   }
 
   Future<Map<String, Object?>> post(String endpoint, {required Request request}) async {
-    Response response = await _read(dioProvider).post<Response>(
+    Response response = await _read(dioProvider).post<Map<String, Object?>>(
       endpoint,
       queryParameters: request.urlParam(),
       data: request.body(),
