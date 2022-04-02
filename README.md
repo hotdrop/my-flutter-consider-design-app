@@ -1,8 +1,13 @@
 # mybt
-Flutterでアプリを作成する際の設計を検討するアプリ。  
-設計検討が目的なのでこのアプリ自体は機能が不十分だったり不足がある。例えば初回起動時に登録したニックネームやメアドを編集する画面がなかったりポイントの利用履歴がホーム画面に表示されている。  
-アプリ名のmybtは「my brue print test app」からとったもの。  
-単純に頭文字のmbptaだと微妙なのでいろいろ考えてmybtとした。今考えるとそもそも元となった英文が微妙であった。
+Flutterでアプリを作成する際の設計を検討するアプリです。  
+設計検討が目的なのでこのアプリ自体は機能が不十分だったり不足がります。例えば初回起動時に登録したニックネームやメアドを編集する画面がなかったりポイントの利用履歴がホーム画面に表示されています。  
+アプリ名のmybtは「my brue print test app」からとったものです。  
+単純に頭文字のmbptaだと微妙なのでいろいろ考えてmybtとしましたが、今考えるとそもそも元となった英文が微妙でした。
+
+# 2022年4月追記　　
+1年経って見返したら古くなっている箇所やクソコードになっている箇所が多々ありましたので見直します。  
+1. pedanticからflutter_lintへ
+
 
 # アプリ概要
 miroで作成した画面フローのスクリーンショット  
@@ -68,8 +73,8 @@ freezedやhive,mockitoのテストクラス自動生成のため、最初の1回
 ## flutter_flavorizr
 Flavorの検証もしたかったので`flutter_flavorizr`ライブラリを使ってコーヒーアプリ環境と紅茶アプリ環境をそれぞれ作成した。
 実行コマンドはそれぞれ以下の通り。
-- flutter run --flavor coffee -t lib/main-coffee.dart
-- flutter run --flavor tea -t lib/main-tea.dart
+- flutter run --flavor coffee -t lib/main_coffee.dart
+- flutter run --flavor tea -t lib/main_tea.dart
 
 ## テストについて
 このリポジトリではサンプルしかないが、本当はViewModel/Repositoryパッケージ/Modelパッケージでビジネスロジックを持っているクラスは全部テスト書いた方が良いと思う。  

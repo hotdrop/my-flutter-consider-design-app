@@ -7,7 +7,7 @@ import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/app_text_form_field.dart';
 
-class PointUseInputPage extends StatelessWidget {
+class PointUseInputPage extends ConsumerWidget {
   PointUseInputPage._();
 
   static void start(BuildContext context) {
@@ -18,18 +18,15 @@ class PointUseInputPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(pointUseViewModel).uiState;
+
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.pointUseTitle)),
-      body: Consumer(
-        builder: (context, watch, child) {
-          final uiState = watch(pointUseViewModel).uiState;
-          return uiState.when(
-            loading: () => _onLoading(),
-            success: () => _onSuccess(context),
-            error: (String errorMsg) => _onError(context, errorMsg),
-          );
-        },
+      body: uiState.when(
+        loading: () => _onLoading(),
+        success: () => _onSuccess(context, ref),
+        error: (String errorMsg) => _onError(context, errorMsg),
       ),
     );
   }
@@ -57,8 +54,8 @@ class PointUseInputPage extends StatelessWidget {
   /// とりあえずポイント獲得と同じUIにしているがアイテムを選んで購入するというUIにしたい
   /// そうすると購入アイテム一蘭も必要になって来るのでまた別途検討する
   ///
-  Widget _onSuccess(BuildContext context) {
-    final holdPoint = context.read(pointUseViewModel).holdPoint;
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final holdPoint = ref.read(pointUseViewModel).holdPoint;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Center(
@@ -67,17 +64,17 @@ class PointUseInputPage extends StatelessWidget {
             AppText.normal('${R.res.strings.pointUseInputOverview}'),
             AppText.large('$holdPoint'),
             const SizedBox(height: 16),
-            _textFieldPoint(context),
+            _textFieldPoint(ref),
             const SizedBox(height: 16),
-            _buttonNext(context),
+            _buttonNext(context, ref),
           ],
         ),
       ),
     );
   }
 
-  Widget _textFieldPoint(BuildContext context) {
-    final viewModel = context.read(pointUseViewModel);
+  Widget _textFieldPoint(WidgetRef ref) {
+    final viewModel = ref.read(pointUseViewModel);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       child: AppTextFormField(
@@ -90,8 +87,8 @@ class PointUseInputPage extends StatelessWidget {
     );
   }
 
-  Widget _buttonNext(BuildContext context) {
-    final usePoint = context.read(pointUseViewModel).usePoint;
+  Widget _buttonNext(BuildContext context, WidgetRef ref) {
+    final usePoint = ref.read(pointUseViewModel).usePoint;
     return ElevatedButton(
       onPressed: (usePoint > 0)
           ? () {

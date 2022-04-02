@@ -11,21 +11,17 @@ import 'package:mybt/ui/start/start_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final viewModel = ref.watch(splashViewModel);
+    final uiState = viewModel.uiState;
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.splashTitle)),
-      body: Consumer(
-        builder: (context, watch, child) {
-          final viewModel = watch(splashViewModel);
-          final uiState = viewModel.uiState;
-          return uiState.when(
-            loading: () => _onLoading(context, userId: viewModel.userId),
-            success: () => _onSuccess(context, appSetting: viewModel.appSetting),
-            error: (String errorMsg) => _onError(context, errorMsg),
-          );
-        },
+      body: uiState.when(
+        loading: () => _onLoading(context, userId: viewModel.userId),
+        success: () => _onSuccess(context, appSetting: viewModel.appSetting),
+        error: (String errorMsg) => _onError(context, errorMsg),
       ),
     );
   }

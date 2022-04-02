@@ -11,7 +11,7 @@ import 'package:mybt/ui/pointuse/point_use_input_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   HomePage._();
 
   static void start(BuildContext context) {
@@ -23,34 +23,30 @@ class HomePage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(homeViewModel).uiState;
     return LifecycleWrapper(
       onLifecycleEvent: (event) {
         if (event == LifecycleEvent.active) {
-          onResume(context);
+          onResume(ref);
         } else if (event == LifecycleEvent.inactive) {
           onStop();
         }
       },
       child: Scaffold(
         appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-        body: Consumer(
-          builder: (context, watch, child) {
-            final uiState = watch(homeViewModel).uiState;
-            return uiState.when(
-              loading: () => _viewBody(context, isLoading: true),
-              success: () => _viewBody(context, isLoading: false),
-              error: (String errorMsg) => _onError(context, errorMsg),
-            );
-          },
+        body: uiState.when(
+          loading: () => _viewBody(context, ref, isLoading: true),
+          success: () => _viewBody(context, ref, isLoading: false),
+          error: (String errorMsg) => _onError(context, errorMsg),
         ),
       ),
     );
   }
 
-  void onResume(BuildContext context) {
+  void onResume(WidgetRef ref) {
     AppLogger.d('onResumeが呼ばれました');
-    final viewModel = context.read(homeViewModel);
+    final viewModel = ref.read(homeViewModel);
     viewModel.onRefresh();
   }
 
@@ -70,20 +66,20 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _viewBody(BuildContext context, {bool isLoading = false}) {
+  Widget _viewBody(BuildContext context, WidgetRef ref, {bool isLoading = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _cardPoint(context, isLoading: isLoading),
+        _cardPoint(context, ref, isLoading: isLoading),
         const SizedBox(height: 16),
         _viewMenuButton(context),
         const SizedBox(height: 16),
-        _viewHistories(context),
+        _viewHistories(context, ref),
       ],
     );
   }
 
-  Widget _cardPoint(BuildContext context, {bool isLoading = false}) {
+  Widget _cardPoint(BuildContext context, WidgetRef ref, {bool isLoading = false}) {
     return Container(
       height: 230,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -99,7 +95,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             if (isLoading) _cardPointLoading(),
-            if (!isLoading) ..._cardPointContent(context),
+            if (!isLoading) ..._cardPointContent(context, ref),
           ],
         ),
       ),
@@ -110,17 +106,17 @@ class HomePage extends StatelessWidget {
     return Center(child: CircularProgressIndicator());
   }
 
-  List<Widget> _cardPointContent(BuildContext context) {
+  List<Widget> _cardPointContent(BuildContext context, WidgetRef ref) {
     return [
-      _currentDateOnCard(),
-      _pointOnCard(context),
-      _detailOnCard(),
+      _currentDateOnCard(ref),
+      _pointOnCard(context, ref),
+      _detailOnCard(ref),
     ];
   }
 
-  Widget _currentDateOnCard() {
+  Widget _currentDateOnCard(WidgetRef ref) {
     return Consumer(builder: (context, watch, child) {
-      final nowStr = watch(homeViewModel).nowDateTimeStr;
+      final nowStr = ref.watch(homeViewModel).nowDateTimeStr;
       return Positioned(
         top: 16,
         left: 16,
@@ -129,10 +125,10 @@ class HomePage extends StatelessWidget {
     });
   }
 
-  Widget _pointOnCard(BuildContext context) {
+  Widget _pointOnCard(BuildContext context, WidgetRef ref) {
     return Consumer(
       builder: (context, watch, child) {
-        final point = watch(pointProvider);
+        final point = ref.watch(pointProvider);
         return Padding(
           padding: const EdgeInsets.only(top: 60),
           child: Row(
@@ -148,9 +144,9 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _detailOnCard() {
+  Widget _detailOnCard(WidgetRef ref) {
     return Consumer(builder: (context, watch, child) {
-      final appSettings = watch(appSettingProvider);
+      final appSettings = ref.watch(appSettingProvider);
       return Positioned(
         bottom: 16,
         left: 16,
@@ -198,8 +194,8 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _viewHistories(BuildContext context) {
-    final histories = context.read(homeViewModel).histories;
+  Widget _viewHistories(BuildContext context, WidgetRef ref) {
+    final histories = ref.read(homeViewModel).histories;
     if (histories == null || histories.isEmpty) {
       // 「ポイント利用/獲得履歴はありません」というラベルを表示した方がいい。
       return SizedBox();

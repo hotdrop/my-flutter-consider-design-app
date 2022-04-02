@@ -8,7 +8,7 @@ import 'package:mybt/common/app_extension.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/app_text_form_field.dart';
 
-class PointGetInputPage extends StatelessWidget {
+class PointGetInputPage extends ConsumerWidget {
   PointGetInputPage._();
 
   static void start(BuildContext context) {
@@ -19,18 +19,15 @@ class PointGetInputPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(pointGetViewModel).uiState;
+
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.pointGetTitle)),
-      body: Consumer(
-        builder: (context, watch, child) {
-          final uiState = watch(pointGetViewModel).uiState;
-          return uiState.when(
-            loading: () => _onLoading(),
-            success: () => _onSuccess(context),
-            error: (String errorMsg) => _onError(context, errorMsg),
-          );
-        },
+      body: uiState.when(
+        loading: () => _onLoading(),
+        success: () => _onSuccess(context, ref),
+        error: (String errorMsg) => _onError(context, errorMsg),
       ),
     );
   }
@@ -53,8 +50,8 @@ class PointGetInputPage extends StatelessWidget {
     );
   }
 
-  Widget _onSuccess(BuildContext context) {
-    final holdPoint = context.read(pointGetViewModel).holdPoint;
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final holdPoint = ref.read(pointGetViewModel).holdPoint;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Column(
@@ -67,16 +64,16 @@ class PointGetInputPage extends StatelessWidget {
             style: Theme.of(context).textTheme.caption,
           ),
           const SizedBox(height: 16),
-          _textFieldPoint(context),
+          _textFieldPoint(ref),
           const SizedBox(height: 16),
-          _buttonNext(context),
+          _buttonNext(context, ref),
         ],
       ),
     );
   }
 
-  Widget _textFieldPoint(BuildContext context) {
-    final viewModel = context.read(pointGetViewModel);
+  Widget _textFieldPoint(WidgetRef ref) {
+    final viewModel = ref.read(pointGetViewModel);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
       child: AppTextFormField(
@@ -89,8 +86,8 @@ class PointGetInputPage extends StatelessWidget {
     );
   }
 
-  Widget _buttonNext(BuildContext context) {
-    final inputPoint = context.read(pointGetViewModel).inputPoint;
+  Widget _buttonNext(BuildContext context, WidgetRef ref) {
+    final inputPoint = ref.read(pointGetViewModel).inputPoint;
     return ElevatedButton(
       onPressed: (inputPoint > 0)
           ? () {

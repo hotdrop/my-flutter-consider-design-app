@@ -1,6 +1,6 @@
 #include "Generated.xcconfig"
 
-FLUTTER_TARGET=lib/main-tea.dart
+FLUTTER_TARGET=lib/_tea.dart
 
 ASSET_PREFIX=tea
 BUNDLE_NAME=紅茶

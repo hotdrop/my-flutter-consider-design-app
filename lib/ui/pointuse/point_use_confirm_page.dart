@@ -7,7 +7,7 @@ import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/progress_dialog.dart';
 
-class PointUseConfirmPage extends StatelessWidget {
+class PointUseConfirmPage extends ConsumerWidget {
   PointUseConfirmPage._();
 
   static void start(BuildContext context) {
@@ -18,14 +18,14 @@ class PointUseConfirmPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.pointUseTitle)),
-      body: _viewBody(context),
+      body: _viewBody(context, ref),
     );
   }
 
-  Widget _viewBody(BuildContext context) {
+  Widget _viewBody(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Column(
@@ -34,26 +34,26 @@ class PointUseConfirmPage extends StatelessWidget {
           Center(child: Text(R.res.strings.pointUseConfirmDetail)),
           const SizedBox(height: 24),
           AppText.large(R.res.strings.pointUseConfirmPointLabel),
-          _textGetPoint(context),
+          _textGetPoint(ref),
           const SizedBox(height: 24),
-          _buttonDecision(context),
+          _buttonDecision(context, ref),
         ],
       ),
     );
   }
 
-  Widget _textGetPoint(BuildContext context) {
-    final usePoint = context.read(pointUseViewModel).usePoint;
+  Widget _textGetPoint(WidgetRef ref) {
+    final usePoint = ref.read(pointUseViewModel).usePoint;
     return Text(
       '$usePoint',
       style: TextStyle(fontSize: 32, color: R.res.colors.accentColor),
     );
   }
 
-  Widget _buttonDecision(BuildContext context) {
+  Widget _buttonDecision(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
       onPressed: () async {
-        final viewModel = context.read(pointUseViewModel);
+        final viewModel = ref.read(pointUseViewModel);
         final dialog = AppProgressDialog<void>();
         await dialog.show(
           context,
