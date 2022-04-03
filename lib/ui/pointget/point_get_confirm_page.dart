@@ -63,7 +63,7 @@ class _ViewDecisionButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ElevatedButton(
-      onPressed: () async => _onPress(context, ref),
+      onPressed: () async => await _onPress(context, ref),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
         child: Text(R.res.strings.pointGetConfirmExecuteButton),

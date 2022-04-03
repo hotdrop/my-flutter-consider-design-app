@@ -81,3 +81,6 @@ Flavorの検証もしたかったので`flutter_flavorizr`ライブラリを使�
 RepositoryクラスでAPI経由で取得したデータをそのまま返すメソッドとか、ViewModelでRepositoryのメソッドを実行するだけとかそういうメソッドはテスト不要だと思う。（前者はAPIクラスがあるはずなのでそのテストを、後者はRepositoryの該当メソッドをテストすれば良いので。）  
 ただ、その後の機能追加/改修案件をやるときに、既存のメソッドに変なコードを追加していないか検証する目的なら全てのメソッドのテストを書いた方が安心感が増すと思う。どこまで書くかはプロジェクトによって相談か。  
 あと、WidgetテストとIntegrationテストはどこまで実装するのがいいのだろうか・・。特にWidgetテストで、まだ自分が有用性を見出せていないので要学習。  
+
+## パフォーマンス測定
+flutter run --flavor coffee -t lib/main_coffee.dart --profile --cache-sksl --purge-persistent-cache

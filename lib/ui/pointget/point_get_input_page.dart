@@ -50,19 +50,17 @@ class PointGetInputPage extends ConsumerWidget {
   }
 }
 
-class _ViewBody extends ConsumerWidget {
+class _ViewBody extends StatelessWidget {
   const _ViewBody({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final holdPoint = ref.watch(pointGetHoldPointStateProvider);
-
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Column(
         children: [
           AppText.normal(R.res.strings.pointGetInputOverview),
-          AppText.large('$holdPoint ${R.res.strings.pointUnit}'),
+          const _ViewHoldPointLabel(),
           const SizedBox(height: 4),
           AppText.caption(R.res.strings.pointGetInputAttension.embedded(<int>[R.res.integers.maxPoint])),
           const SizedBox(height: 16),
@@ -72,6 +70,16 @@ class _ViewBody extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+class _ViewHoldPointLabel extends ConsumerWidget {
+  const _ViewHoldPointLabel({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final holdPoint = ref.watch(pointGetHoldPointStateProvider);
+    return AppText.large('$holdPoint ${R.res.strings.pointUnit}');
   }
 }
 
@@ -87,7 +95,7 @@ class _ViewPointTextField extends ConsumerWidget {
       child: TextFormField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          labelText: R.res.strings.pointGetInputTextFieldHint,
+          labelText: R.res.strings.pointGetInputTextFieldLabel,
           counterText: '',
         ),
         style: const TextStyle(fontSize: 24),
