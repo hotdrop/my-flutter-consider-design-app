@@ -8,7 +8,7 @@ extension StringExtension on String {
     });
     index = 1;
     args.whereType<String>().forEach((s) {
-      result = result.replaceFirst('%s$index', '$s');
+      result = result.replaceFirst('%s$index', s);
       index++;
     });
     return result;

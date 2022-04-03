@@ -4,55 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/models/app_setting.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_page.dart';
 import 'package:mybt/ui/start/splash_view_model.dart';
 import 'package:mybt/ui/start/start_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends ConsumerWidget {
+  const SplashPage({Key? key}) : super(key: key);
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uiState = ref.watch(splashViewModel).uiState;
+
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.splashTitle)),
-      body: Consumer(
-        builder: (context, watch, child) {
-          final viewModel = watch(splashViewModel);
-          final uiState = viewModel.uiState;
-          return uiState.when(
-            loading: () => _onLoading(context, userId: viewModel.userId),
-            success: () => _onSuccess(context, appSetting: viewModel.appSetting),
-            error: (String errorMsg) => _onError(context, errorMsg),
-          );
-        },
+      body: uiState.when(
+        loading: () => const _ViewLoadingPage(),
+        success: () => _onSuccess(context, ref),
+        error: (String errorMsg) => _onError(context, errorMsg),
       ),
     );
   }
 
-  Widget _onLoading(BuildContext context, {String? userId}) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
-      child: Column(
-        children: [
-          Image.asset(R.res.images.startImage),
-          const SizedBox(height: 16),
-          const CircularProgressIndicator(),
-          SizedBox(height: 24),
-          if (userId != null) Text('${R.res.strings.splashUserIDLabel}$userId'),
-        ],
-      ),
-    );
-  }
-
-  Widget _onSuccess(BuildContext context, {AppSetting? appSetting}) {
-    // アプリ設定がない場合は初回起動画面を表示
-    if (appSetting == null) {
-      return _viewFirstStart(context);
+  Widget _onSuccess(BuildContext context, WidgetRef ref) {
+    final isInitialized = ref.read(appSettingProvider).isInitialized();
+    if (isInitialized) {
+      Future<void>.delayed(Duration.zero).then((_) {
+        HomePage.start(context);
+      });
+      return const _ViewLoadingPage();
+    } else {
+      return const _ViewFirstPage();
     }
-
-    Future<void>.delayed(Duration.zero).then((_) => HomePage.start(context));
-    return _onLoading(context, userId: appSetting.userId);
   }
 
   Widget _onError(BuildContext context, String errorMsg) {
@@ -68,12 +53,40 @@ class SplashPage extends StatelessWidget {
         },
       ).show(context);
     });
+
     return Center(
       child: Text(R.res.strings.splashErrorLabel),
     );
   }
+}
 
-  Widget _viewFirstStart(BuildContext context) {
+class _ViewLoadingPage extends ConsumerWidget {
+  const _ViewLoadingPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userId = ref.watch(appSettingProvider).userId;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
+      child: Column(
+        children: [
+          Image.asset(R.res.images.startImage),
+          const SizedBox(height: 16),
+          const CircularProgressIndicator(),
+          const SizedBox(height: 24),
+          if (userId != null) Text('${R.res.strings.splashUserIDLabel}$userId'),
+        ],
+      ),
+    );
+  }
+}
+
+class _ViewFirstPage extends StatelessWidget {
+  const _ViewFirstPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(
@@ -81,22 +94,25 @@ class SplashPage extends StatelessWidget {
           Image.asset(R.res.images.startImage),
           const SizedBox(height: 16),
           AppText.large(R.res.strings.splashOverview),
-          Expanded(
+          const Expanded(
             child: Align(
               alignment: FractionalOffset.center,
-              child: _buttonStart(context),
+              child: _ViewButtonStart(),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buttonStart(BuildContext context) {
+class _ViewButtonStart extends StatelessWidget {
+  const _ViewButtonStart({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        StartPage.start(context);
-      },
+      onPressed: () => StartPage.start(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 16),
         child: Text(R.res.strings.splashFirstTimeButton),

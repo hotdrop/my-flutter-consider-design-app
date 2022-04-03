@@ -4,7 +4,7 @@ import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/repository/local/entities/history_entity.dart';
 
-final historyDaoProvider = Provider((ref) => HistoryDao());
+final historyDaoProvider = Provider((ref) => const HistoryDao());
 
 class HistoryDao {
   const HistoryDao();

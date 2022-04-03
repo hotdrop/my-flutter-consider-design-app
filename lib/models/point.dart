@@ -6,13 +6,12 @@ final pointProvider = StateNotifierProvider<PointNotifier, Point>((ref) {
 });
 
 class PointNotifier extends StateNotifier<Point> {
-  PointNotifier(this._read) : super(Point(0));
+  PointNotifier(this._read) : super(const Point(0));
 
   final Reader _read;
 
   Future<void> refresh() async {
-    final repository = _read(pointRepositoryProvider);
-    state = await repository.find();
+    state = await _read(pointRepositoryProvider).find();
   }
 }
 

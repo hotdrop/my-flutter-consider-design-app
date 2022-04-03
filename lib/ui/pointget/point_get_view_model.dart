@@ -1,10 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/point_repository.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/base_view_model.dart';
-import 'package:mybt/common/app_extension.dart';
 
 final pointGetViewModel = ChangeNotifierProvider.autoDispose((ref) => PointGetViewModel(ref.read));
+
+// 現在保持しているポイント数
+final pointGetHoldPointStateProvider = StateProvider((_) => 0);
+
+// ユーザーが入力したポイント数
+final pointGetInputStateProvider = StateProvider((_) => 0);
+
+// 残り獲得可能なポイント数
+final pointGetAvailableMaxValueStateProvider = StateProvider<int>((_) => 0);
+
+// ユーザーが入力したポイント数が獲得可能か
+// <pointGetAvailableMaxValueStateProviderをwatchしている理由>
+// TextFormFieldのvalidateでも同じことをやっているので今のところただの二重チェック。
+// ただ、今はたまたまチェック内容が同じだけでこのProviderと入力のvalidateは別物。もしTextFormFieldで別のvalidateをやったり新しい入力項目を追加した場合の
+// 拡張性を考えてこの実装にした。
+final pointGetOkInputPointStateProvider = StateProvider<bool>((ref) {
+  final inputVal = ref.watch(pointGetInputStateProvider);
+  final maxVal = ref.watch(pointGetAvailableMaxValueStateProvider);
+  return inputVal > 0 && inputVal <= maxVal;
+});
 
 class PointGetViewModel extends BaseViewModel {
   PointGetViewModel(this._read) {
@@ -13,49 +32,23 @@ class PointGetViewModel extends BaseViewModel {
 
   final Reader _read;
 
-  late int _holdPoint;
-  int get holdPoint => _holdPoint;
-
-  int _inputPoint = 0;
-  int get inputPoint => _inputPoint;
-
-  late int _availableMaxGetPoint;
-
   Future<void> init() async {
     try {
       final myPoint = await _read(pointRepositoryProvider).find();
-      _holdPoint = myPoint.balance;
-      _availableMaxGetPoint = R.res.integers.maxPoint - myPoint.balance;
+      _read(pointGetHoldPointStateProvider.notifier).state = myPoint.balance;
+      _read(pointGetAvailableMaxValueStateProvider.notifier).state = R.res.integers.maxPoint - myPoint.balance;
       success();
     } on Exception catch (e, s) {
       error('エラー', exception: e, stackTrace: s);
     }
   }
 
-  void input(String inputVal, bool isValidate) {
-    final inputPoint = int.tryParse(inputVal) ?? 0;
-    if (isValidate) {
-      _inputPoint = inputPoint;
-    } else {
-      _inputPoint = 0;
-    }
-    notifyListeners();
-  }
-
-  String? pointValidator(String? inputVal) {
-    final inputPoint = int.tryParse(inputVal ?? '0') ?? 0;
-    if (inputPoint <= 0) {
-      return null;
-    }
-
-    if (inputPoint > _availableMaxGetPoint) {
-      return '${R.res.strings.pointGetInputTextFieldErrorOverMaxPoint}'.embedded(<int>[_availableMaxGetPoint]);
-    }
-
-    return null;
+  void input(int inputVal) {
+    _read(pointGetInputStateProvider.notifier).state = inputVal;
   }
 
   Future<void> execute() async {
-    await _read(pointRepositoryProvider).pointGet(_inputPoint);
+    final value = _read(pointGetInputStateProvider);
+    await _read(pointRepositoryProvider).pointGet(value);
   }
 }

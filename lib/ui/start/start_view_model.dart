@@ -4,15 +4,22 @@ import 'package:mybt/ui/base_view_model.dart';
 
 final startViewModel = ChangeNotifierProvider.autoDispose((ref) => StartViewModel(ref.read));
 
+final startPageInputNickNameStateProvider = StateProvider<String>((ref) => '');
+
+final startPageInputEmailStateProvider = StateProvider<String>((ref) => '');
+
+final startPageCanSaveStateProvider = StateProvider((ref) {
+  final inputNickName = ref.watch(startPageInputNickNameStateProvider);
+  final inputEmail = ref.watch(startPageInputEmailStateProvider);
+  return inputNickName.isNotEmpty && inputEmail.isNotEmpty;
+});
+
 class StartViewModel extends BaseViewModel {
   StartViewModel(this._read) {
     init();
   }
 
   final Reader _read;
-
-  String? _inputNickName;
-  String? _inputEmail;
 
   Future<void> init() async {
     // このViewModelは初期化が不要なので即successにする。
@@ -21,14 +28,16 @@ class StartViewModel extends BaseViewModel {
   }
 
   void inputNickName(String input) {
-    _inputNickName = input;
+    _read(startPageInputNickNameStateProvider.notifier).state = input;
   }
 
   void inputEmail(String input) {
-    _inputEmail = input;
+    _read(startPageInputEmailStateProvider.notifier).state = input;
   }
 
   Future<void> save() async {
-    await _read(settingRepositoryProvider).registerUser(_inputNickName, _inputEmail);
+    final inputNickname = _read(startPageInputNickNameStateProvider);
+    final inputEmail = _read(startPageInputEmailStateProvider);
+    await _read(settingRepositoryProvider).registerUser(inputNickname, inputEmail);
   }
 }

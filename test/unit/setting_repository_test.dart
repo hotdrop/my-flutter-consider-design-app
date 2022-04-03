@@ -11,9 +11,9 @@ import 'setting_repository_test.mocks.dart';
 @GenerateMocks([SettingDao])
 void main() {
   test('アプリ設定情報を正しく取得できるか確認する', () async {
-    final testUserId = 'result1';
-    final testNickName = 'result2';
-    final testEmail = 'result3';
+    const testUserId = 'result1';
+    const testNickName = 'result2';
+    const testEmail = 'result3';
     final expectAppSetting = AppSetting(userId: testUserId, nickName: testNickName, email: testEmail);
 
     final mockDao = MockSettingDao();

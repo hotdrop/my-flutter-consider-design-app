@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mybt/common/app_logger.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'fake_http_client.g.dart';
@@ -44,13 +44,13 @@ class _FakeDio implements Dio {
     switch (path) {
       case '/user/$fakeCoffeeUserID':
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(seconds: 1));
         return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
       case '/point':
         final sharedPrefs = await SharedPreferences.getInstance();
         final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(seconds: 1));
         return FakeResponse({'point': currentPoint}, statusCode: 200) as Response<T>;
     }
     throw UnimplementedError();
@@ -70,17 +70,17 @@ class _FakeDio implements Dio {
     switch (path) {
       case '/user':
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(Duration(seconds: 2));
+        await Future<void>.delayed(const Duration(seconds: 2));
         return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
       case '/point':
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(seconds: 1));
         final point = data?['inputPoint'] as int;
         _acquirePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;
       case '/point/use':
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(seconds: 1));
         final point = data?['inputPoint'] as int;
         _usePoint(point);
         return FakeResponse({}, statusCode: 200) as Response<T>;

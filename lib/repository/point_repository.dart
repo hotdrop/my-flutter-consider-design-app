@@ -4,7 +4,7 @@ import 'package:mybt/models/point.dart';
 import 'package:mybt/repository/local/history_dao.dart';
 import 'package:mybt/repository/local/setting_dao.dart';
 import 'package:mybt/repository/remote/api/point_api.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 
 final pointRepositoryProvider = Provider((ref) => PointRepository(ref.read));
 

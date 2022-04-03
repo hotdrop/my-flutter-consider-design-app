@@ -21,7 +21,7 @@ class HttpClient {
     }
 
     if (response.statusCode != HttpStatus.ok) {
-      throw HttpException('自身のポイント取得に失敗しました。');
+      throw const HttpException('自身のポイント取得に失敗しました。');
     }
 
     return response.extra;
@@ -35,7 +35,7 @@ class HttpClient {
     );
 
     if (response.statusCode != HttpStatus.ok) {
-      throw HttpException('自身のポイント取得に失敗しました。');
+      throw const HttpException('自身のポイント取得に失敗しました。');
     }
 
     return response.extra;

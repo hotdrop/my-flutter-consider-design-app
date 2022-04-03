@@ -5,16 +5,16 @@ import 'package:mybt/common/app_logger.dart';
 part 'base_view_model.freezed.dart';
 
 class BaseViewModel extends ChangeNotifier {
-  UIState _uiState = OnLoading();
+  UIState _uiState = const OnLoading();
   UIState get uiState => _uiState;
 
   void nowLoading() {
-    _uiState = OnLoading();
+    _uiState = const OnLoading();
     notifyListeners();
   }
 
   void success() {
-    _uiState = OnSuccess();
+    _uiState = const OnSuccess();
     notifyListeners();
   }
 

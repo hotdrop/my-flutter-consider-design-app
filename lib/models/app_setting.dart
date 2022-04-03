@@ -13,8 +13,7 @@ class AppSettingsNotifier extends StateNotifier<AppSetting> {
 
   Future<void> refresh() async {
     AppLogger.d('アプリ設定のrefreshが呼ばれました。');
-    final repository = _read(settingRepositoryProvider);
-    state = await repository.find();
+    state = await _read(settingRepositoryProvider).find();
   }
 }
 

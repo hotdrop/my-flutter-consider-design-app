@@ -29,11 +29,11 @@ class AppProgressDialog<T> {
     await showDialog<void>(
       context: context,
       builder: (_) {
-        return Dialog(
+        return const Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
           child: Center(
-            child: const CircularProgressIndicator(),
+            child: CircularProgressIndicator(),
           ),
         );
       },
