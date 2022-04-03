@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:lifecycle/lifecycle.dart';
 import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_setting.dart';
+import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/res/R.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
@@ -12,12 +14,12 @@ import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
 class HomePage extends ConsumerWidget {
-  HomePage._();
+  const HomePage._();
 
-  static void start(BuildContext context) {
-    Navigator.pushAndRemoveUntil<void>(
+  static Future<void> start(BuildContext context) async {
+    await Navigator.pushAndRemoveUntil<void>(
       context,
-      MaterialPageRoute(builder: (_) => HomePage._()),
+      MaterialPageRoute(builder: (_) => const HomePage._()),
       (route) => false,
     );
   }
@@ -25,6 +27,7 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uiState = ref.watch(homeViewModel).uiState;
+
     return LifecycleWrapper(
       onLifecycleEvent: (event) {
         if (event == LifecycleEvent.active) {
@@ -36,140 +39,160 @@ class HomePage extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(title: Text(R.res.strings.homeTitle)),
         body: uiState.when(
-          loading: () => _viewBody(context, ref, isLoading: true),
-          success: () => _viewBody(context, ref, isLoading: false),
-          error: (String errorMsg) => _onError(context, errorMsg),
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+          success: () {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                _ViewPointCard(),
+                SizedBox(height: 16),
+                _ViewMenuButton(),
+                SizedBox(height: 16),
+                _ViewHistories(),
+              ],
+            );
+          },
+          error: (String errorMsg) {
+            _processOnError(context, errorMsg);
+            return Center(
+              child: Text(R.res.strings.homeLoadingErrorLabel),
+            );
+          },
         ),
       ),
     );
   }
 
+  ///
+  /// LifecycleWrapperを検証してみたかのでonResumeとonStopを作りました
   void onResume(WidgetRef ref) {
     AppLogger.d('onResumeが呼ばれました');
-    final viewModel = ref.read(homeViewModel);
-    viewModel.onRefresh();
+    ref.read(homeViewModel).onRefresh();
   }
 
   void onStop() {
-    AppLogger.d('onStopが呼ばれた');
+    AppLogger.d('onStopが呼ばれました');
   }
 
-  Widget _onError(BuildContext context, String errorMsg) {
+  void _processOnError(BuildContext context, String errorMsg) {
     Future<void>.delayed(Duration.zero).then((value) {
       AppDialog(
         errorMsg,
         onOk: () {},
       ).show(context);
     });
-    return Center(
-      child: Text('エラーです。'),
-    );
   }
+}
 
-  Widget _viewBody(BuildContext context, WidgetRef ref, {bool isLoading = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _cardPoint(context, ref, isLoading: isLoading),
-        const SizedBox(height: 16),
-        _viewMenuButton(context),
-        const SizedBox(height: 16),
-        _viewHistories(context, ref),
-      ],
-    );
-  }
+class _ViewPointCard extends ConsumerWidget {
+  const _ViewPointCard({Key? key}) : super(key: key);
 
-  Widget _cardPoint(BuildContext context, WidgetRef ref, {bool isLoading = false}) {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(homeLoadingPointCardStateProvider);
+
     return Container(
       height: 230,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        elevation: 4,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Ink.image(
-                image: AssetImage(R.res.images.homePointCard),
-                fit: BoxFit.fill,
-              ),
+      child: _createBody(isLoading),
+    );
+  }
+
+  Widget _createBody(bool isLoading) {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return const _ViewBodyPointCard();
+    }
+  }
+}
+
+class _ViewBodyPointCard extends ConsumerWidget {
+  const _ViewBodyPointCard({Key? key}) : super(key: key);
+
+  static final dateFormatter = DateFormat('y/M/d H:m:s');
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Ink.image(
+              image: AssetImage(R.res.images.homePointCard),
+              fit: BoxFit.fill,
             ),
-            if (isLoading) _cardPointLoading(),
-            if (!isLoading) ..._cardPointContent(context, ref),
-          ],
-        ),
+          ),
+          Positioned(
+            top: 16,
+            left: 16,
+            child: AppText.normal(dateFormatter.format(DateTime.now()), color: Colors.white),
+          ),
+          const _ViewPointOnCard(),
+          const _ViewUserInfoOnCard(),
+        ],
       ),
     );
   }
+}
 
-  Widget _cardPointLoading() {
-    return Center(child: CircularProgressIndicator());
-  }
+class _ViewPointOnCard extends ConsumerWidget {
+  const _ViewPointOnCard({Key? key}) : super(key: key);
 
-  List<Widget> _cardPointContent(BuildContext context, WidgetRef ref) {
-    return [
-      _currentDateOnCard(ref),
-      _pointOnCard(context, ref),
-      _detailOnCard(ref),
-    ];
-  }
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final point = ref.watch(pointProvider);
 
-  Widget _currentDateOnCard(WidgetRef ref) {
-    return Consumer(builder: (context, watch, child) {
-      final nowStr = ref.watch(homeViewModel).nowDateTimeStr;
-      return Positioned(
-        top: 16,
-        left: 16,
-        child: _labelOnCard(nowStr),
-      );
-    });
-  }
-
-  Widget _pointOnCard(BuildContext context, WidgetRef ref) {
-    return Consumer(
-      builder: (context, watch, child) {
-        final point = ref.watch(pointProvider);
-        return Padding(
-          padding: const EdgeInsets.only(top: 60),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _labelOnCard('${point.balance}', fontSize: 32),
-              _labelOnCard(R.res.strings.pointUnit),
-            ],
-          ),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.only(top: 80),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          AppText.huge('${point.balance}', color: Colors.white),
+          AppText.normal(R.res.strings.pointUnit, color: Colors.white),
+        ],
+      ),
     );
   }
+}
 
-  Widget _detailOnCard(WidgetRef ref) {
-    return Consumer(builder: (context, watch, child) {
-      final appSettings = ref.watch(appSettingProvider);
-      return Positioned(
-        bottom: 16,
-        left: 16,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // これらの項目を編集する画面がないので本当は作成した方がいい
-            _labelOnCard(appSettings.nickName ?? R.res.strings.homeUnSettingNickname),
-            _labelOnCard(appSettings.email ?? R.res.strings.homeUnSettingEmail),
-          ],
-        ),
-      );
-    });
-  }
+class _ViewUserInfoOnCard extends ConsumerWidget {
+  const _ViewUserInfoOnCard({Key? key}) : super(key: key);
 
-  Widget _labelOnCard(String text, {double? fontSize}) {
-    return Text(
-      text,
-      style: TextStyle(color: Colors.white, fontSize: fontSize),
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appSettings = ref.watch(appSettingProvider);
+    final nickname = appSettings.nickName ?? R.res.strings.homeUnSettingNickname;
+    final email = appSettings.email ?? R.res.strings.homeUnSettingEmail;
+
+    return Positioned(
+      bottom: 16,
+      left: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppText.normal(nickname, color: Colors.white),
+          AppText.normal(email, color: Colors.white),
+        ],
+      ),
     );
   }
+}
 
-  Widget _viewMenuButton(BuildContext context) {
+class _ViewMenuButton extends StatelessWidget {
+  const _ViewMenuButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -178,48 +201,54 @@ class HomePage extends ConsumerWidget {
           _MenuButton(
             label: R.res.strings.homeMenuGetPoint,
             iconData: Icons.account_balance_wallet,
-            onTap: () {
-              PointGetInputPage.start(context);
-            },
+            onTap: () => PointGetInputPage.start(context),
           ),
           _MenuButton(
             label: R.res.strings.homeMenuUsePoint,
             iconData: Icons.shopping_cart_outlined,
-            onTap: () {
-              PointUseInputPage.start(context);
-            },
+            onTap: () => PointUseInputPage.start(context),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _viewHistories(BuildContext context, WidgetRef ref) {
-    final histories = ref.read(homeViewModel).histories;
-    if (histories == null || histories.isEmpty) {
-      // 「ポイント利用/獲得履歴はありません」というラベルを表示した方がいい。
-      return SizedBox();
-    } else {
-      return Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: histories.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              elevation: 2.0,
-              child: ListTile(
-                title: Text(histories[index].toStringDateTime()),
-                subtitle: Text(histories[index].detail),
-                trailing: Text(
-                  '${histories[index].point} ${R.res.strings.pointUnit}',
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-            );
-          },
-        ),
-      );
+class _ViewHistories extends ConsumerWidget {
+  const _ViewHistories({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final histories = ref.watch(homeHistoriesStateProvider);
+    if (histories.isEmpty) {
+      return const SizedBox();
     }
+
+    return Expanded(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemCount: histories.length,
+        itemBuilder: (ctx, index) => _ViewRowHistory(histories[index]),
+      ),
+    );
+  }
+}
+
+class _ViewRowHistory extends StatelessWidget {
+  const _ViewRowHistory(this.history, {Key? key}) : super(key: key);
+
+  final History history;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2.0,
+      child: ListTile(
+        title: Text(history.toStringDateTime()),
+        subtitle: AppText.normal(history.detail),
+        trailing: AppText.large('${history.point} ${R.res.strings.pointUnit}'),
+      ),
+    );
   }
 }
 
@@ -242,7 +271,7 @@ class _MenuButton extends StatelessWidget {
         children: [
           Icon(iconData, size: 28, color: R.res.colors.themeColor),
           const SizedBox(height: 8),
-          AppText.normal(label),
+          AppText.normal(label, color: R.res.colors.themeColor),
         ],
       ),
     );

@@ -46,7 +46,7 @@ class PointGetConfirmPage extends ConsumerWidget {
     final inputPoint = ref.read(pointGetViewModel).inputPoint;
     return Text(
       '$inputPoint',
-      style: TextStyle(fontSize: 32, color: R.res.colors.accentColor),
+      style: TextStyle(fontSize: 32, color: R.res.colors.appBarColor),
     );
   }
 

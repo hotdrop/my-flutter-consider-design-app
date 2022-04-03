@@ -46,7 +46,7 @@ class PointUseConfirmPage extends ConsumerWidget {
     final usePoint = ref.read(pointUseViewModel).usePoint;
     return Text(
       '$usePoint',
-      style: TextStyle(fontSize: 32, color: R.res.colors.accentColor),
+      style: TextStyle(fontSize: 32, color: R.res.colors.appBarColor),
     );
   }
 

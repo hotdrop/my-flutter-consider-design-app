@@ -5,5 +5,5 @@ import 'app.dart';
 
 void main() {
   R.initTea();
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }

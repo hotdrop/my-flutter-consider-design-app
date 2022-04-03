@@ -5,5 +5,5 @@ import 'package:mybt/res/R.dart';
 
 void main() {
   R.initCoffee();
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }

@@ -1,5 +1,5 @@
 class CommonStrings {
-  final String pointUnit = 'ポイント';
+  final String pointUnit = 'P';
 
   final String splashTitle = '起動';
   final String splashUserIDLabel = 'ユーザーID: ';
@@ -7,18 +7,20 @@ class CommonStrings {
   final String splashErrorLabel = 'エラーです。アプリを再度実行してください。';
 
   final String startTitle = 'はじめに';
-  final String startOverview = 'ユーザー情報を登録します。嫌だったら入力せずに進んでください。';
-  final String startNickNameFieldLabel = 'ニックネーム（省略可能）';
-  final String startNickNameFieldHint = 'サイヤ人';
-  final String startEmailFieldLabel = 'メールアドレス（省略可能）';
-  final String startEmailFieldHint = 'migatteno_gokui@seven.universe.wis.jp';
+  final String startOverview = 'ユーザー情報を登録します。';
+  final String startNickNameFieldLabel = 'ニックネーム';
+  final String startEmailFieldLabel = 'メールアドレス';
   final String startRegisterButton = 'この内容で登録する';
+
+  final String emailValidationRegex = r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+  final String emailValidationError = 'XXX＠YYY.ZZの形式で入力してください。';
 
   final String homeTitle = 'ホーム';
   final String homeUnSettingNickname = 'ニックネーム未設定';
   final String homeUnSettingEmail = 'Email未設定';
   final String homeMenuGetPoint = 'ポイント獲得';
   final String homeMenuUsePoint = 'ポイント利用';
+  final String homeLoadingErrorLabel = 'エラーが発生しました。';
 
   final String pointGetTitle = 'ポイント獲得';
   final String pointGetInputOverview = '現在保持しているポイント数';
