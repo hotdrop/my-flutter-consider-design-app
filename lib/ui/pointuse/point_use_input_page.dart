@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/pointuse/point_use_confirm_page.dart';
 import 'package:mybt/ui/pointuse/point_use_view_model.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';

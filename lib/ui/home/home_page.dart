@@ -6,7 +6,7 @@ import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/pointget/point_get_input_page.dart';
 import 'package:mybt/ui/pointuse/point_use_input_page.dart';

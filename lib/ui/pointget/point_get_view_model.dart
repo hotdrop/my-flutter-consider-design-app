@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/point_repository.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/base_view_model.dart';
 
 final pointGetViewModel = ChangeNotifierProvider.autoDispose((ref) => PointGetViewModel(ref.read));

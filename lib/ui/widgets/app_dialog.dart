@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 
 class AppDialog {
   const AppDialog(

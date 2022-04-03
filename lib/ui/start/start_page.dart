@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/common/app_logger.dart';
-import 'package:mybt/res/R.dart';
+import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_page.dart';
 import 'package:mybt/ui/start/start_view_model.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
