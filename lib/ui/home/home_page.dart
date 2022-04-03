@@ -68,7 +68,11 @@ class HomePage extends ConsumerWidget {
   }
 
   ///
-  /// LifecycleWrapperを検証してみたかのでonResumeとonStopを作りました
+  /// onResumeでonRefreshを呼びポイントCardViewとHistoryを更新している。
+  /// LifecycleWrapperを使ってみたかったのと部分的なViewのロード検証をしたかったので作ったが、本当は
+  /// homeHistoriesStateProviderをhomeViewModelではなくmodelクラスに切り出してポイントGetやUseを
+  /// したときにProviderを更新するようにしたほうがいいと思う。
+  ///
   void onResume(WidgetRef ref) {
     AppLogger.d('onResumeが呼ばれました');
     ref.read(homeViewModel).onRefresh();

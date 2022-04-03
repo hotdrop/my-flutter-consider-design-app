@@ -9,7 +9,8 @@ class AppTextFormField extends StatefulWidget {
     this.maxLength,
     required this.validator,
     required this.onChanged,
-  });
+    Key? key,
+  }) : super(key: key);
 
   final TextInputType keyboardType;
   final String label;
