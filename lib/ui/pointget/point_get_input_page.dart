@@ -19,39 +19,53 @@ class PointGetInputPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(pointGetViewModel).uiState;
-
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.pointGetTitle)),
-      body: uiState.when(
-        loading: () {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
-        success: () => const _ViewBody(),
-        error: (String errorMsg) {
-          _processOnError(context, errorMsg);
-          return Center(
-            child: Text(R.res.strings.pointGetInputError),
-          );
-        },
-      ),
+      body: ref.watch(pointGetViewModel).when(
+            loading: () => const _OnViewLoading(),
+            data: (_) => const _OnViewSuccess(),
+            error: (err, _) => _OnViewError(errorMessage: '$err'),
+          ),
+    );
+  }
+}
+
+class _OnViewLoading extends StatelessWidget {
+  const _OnViewLoading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _OnViewError extends StatelessWidget {
+  const _OnViewError({Key? key, required this.errorMessage}) : super(key: key);
+
+  final String errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    _processOnError(context);
+    return Center(
+      child: Text(R.res.strings.pointGetInputError),
     );
   }
 
-  void _processOnError(BuildContext context, String errorMsg) {
+  void _processOnError(BuildContext context) {
     Future<void>.delayed(Duration.zero).then((value) {
       AppDialog(
-        errorMsg,
+        errorMessage,
         onOk: () {},
       ).show(context);
     });
   }
 }
 
-class _ViewBody extends StatelessWidget {
-  const _ViewBody({Key? key}) : super(key: key);
+class _OnViewSuccess extends StatelessWidget {
+  const _OnViewSuccess({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +92,7 @@ class _ViewHoldPointLabel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final holdPoint = ref.watch(pointGetHoldPointStateProvider);
+    final holdPoint = ref.watch(pointGetInputStateProvider);
     return AppText.large('$holdPoint ${R.res.strings.pointUnit}');
   }
 }
@@ -88,7 +102,7 @@ class _ViewPointTextField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final availableMaxGetPoint = ref.watch(pointGetAvailableMaxValueStateProvider);
+    final availableMaxGetPoint = ref.watch(pointGetViewModel.notifier).maxAvaiableGetPoint;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
@@ -105,9 +119,9 @@ class _ViewPointTextField extends ConsumerWidget {
         onChanged: (String? newVal) {
           if (_pointValidator(newVal, availableMaxGetPoint) == null) {
             final inputVal = (newVal != null) ? int.tryParse(newVal) ?? 0 : 0;
-            ref.read(pointGetViewModel).input(inputVal);
+            ref.read(pointGetViewModel.notifier).input(inputVal);
           } else {
-            ref.read(pointGetViewModel).input(0);
+            ref.read(pointGetViewModel.notifier).input(0);
           }
         },
       ),

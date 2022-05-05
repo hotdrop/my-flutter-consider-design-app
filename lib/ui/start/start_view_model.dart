@@ -1,43 +1,82 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/setting_repository.dart';
-import 'package:mybt/ui/base_view_model.dart';
 
-final startViewModel = ChangeNotifierProvider.autoDispose((ref) => StartViewModel(ref.read));
-
-final startPageInputNickNameStateProvider = StateProvider<String>((ref) => '');
-
-final startPageInputEmailStateProvider = StateProvider<String>((ref) => '');
-
-final startPageCanSaveStateProvider = StateProvider((ref) {
-  final inputNickName = ref.watch(startPageInputNickNameStateProvider);
-  final inputEmail = ref.watch(startPageInputEmailStateProvider);
-  return inputNickName.isNotEmpty && inputEmail.isNotEmpty;
+final startViewModel = StateNotifierProvider.autoDispose<_StartViewModel, AsyncValue<void>>((ref) {
+  return _StartViewModel(ref.read);
 });
 
-class StartViewModel extends BaseViewModel {
-  StartViewModel(this._read) {
-    init();
+class _StartViewModel extends StateNotifier<AsyncValue<void>> {
+  _StartViewModel(this._read) : super(const AsyncValue.loading()) {
+    _init();
   }
 
   final Reader _read;
 
-  Future<void> init() async {
-    // このViewModelは初期化が不要なので即successにする。
-    // たとえ不要であっても全体の設計を合わせるためinitは必ず実装した方が良いかなと思ったのでこうした。
-    success();
+  Future<void> _init() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      // 何か初期化あればここで行う
+    });
   }
 
-  void inputNickName(String input) {
-    _read(startPageInputNickNameStateProvider.notifier).state = input;
+  void inputNickName(String newVal) {
+    _read(_uiStateProvider.notifier).inputNickName(newVal);
   }
 
-  void inputEmail(String input) {
-    _read(startPageInputEmailStateProvider.notifier).state = input;
+  void inputEmail(String newVal) {
+    _read(_uiStateProvider.notifier).inputEmail(newVal);
   }
 
   Future<void> save() async {
-    final inputNickname = _read(startPageInputNickNameStateProvider);
-    final inputEmail = _read(startPageInputEmailStateProvider);
+    final inputNickname = _read(_uiStateProvider).nickName;
+    final inputEmail = _read(_uiStateProvider).email;
     await _read(settingRepositoryProvider).registerUser(inputNickname, inputEmail);
   }
 }
+
+final _uiStateProvider = StateNotifierProvider<_UiStateNotifier, _UiState>((_) {
+  return _UiStateNotifier(_UiState.empty());
+});
+
+class _UiStateNotifier extends StateNotifier<_UiState> {
+  _UiStateNotifier(_UiState state) : super(state);
+
+  void inputNickName(String newVal) {
+    state = state.copyWith(nickName: newVal);
+  }
+
+  void inputEmail(String newVal) {
+    state = state.copyWith(email: newVal);
+  }
+}
+
+class _UiState {
+  const _UiState(this.nickName, this.email);
+
+  factory _UiState.empty() {
+    return const _UiState('', '');
+  }
+
+  final String nickName;
+  final String email;
+
+  _UiState copyWith({String? nickName, String? email}) {
+    return _UiState(
+      nickName ?? this.nickName,
+      email ?? this.email,
+    );
+  }
+}
+
+final startPageInputNickNameProvider = Provider<String>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.nickName));
+});
+
+final startPageInputEmailProvider = Provider<String>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.email));
+});
+
+final startPageCanSaveProvider = Provider<bool>((ref) {
+  final uiState = ref.watch(_uiStateProvider);
+  return uiState.nickName.isNotEmpty && uiState.email.isNotEmpty;
+});

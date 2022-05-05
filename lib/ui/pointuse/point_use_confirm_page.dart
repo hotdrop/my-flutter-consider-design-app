@@ -72,7 +72,7 @@ class _ViewDecisionButton extends ConsumerWidget {
     const dialog = AppProgressDialog<void>();
     await dialog.show(
       context,
-      execute: ref.read(pointUseViewModel).execute,
+      execute: ref.read(pointUseViewModel.notifier).execute,
       onSuccess: (result) {
         AppLogger.d('ポイント利用に成功しました！');
         Navigator.popUntil(context, (route) => route.isFirst);

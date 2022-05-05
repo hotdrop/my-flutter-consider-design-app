@@ -3,67 +3,86 @@ import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/repository/point_repository.dart';
-import 'package:mybt/ui/base_view_model.dart';
 
-final homeViewModel = ChangeNotifierProvider.autoDispose((ref) {
-  return HomeViewModel(ref.read);
+final homeViewModel = StateNotifierProvider.autoDispose<_HomeViewModel, AsyncValue<void>>((ref) {
+  return _HomeViewModel(ref.read);
 });
 
-final homeLoadingPointCardStateProvider = StateProvider<bool>((_) => false);
+class _HomeViewModel extends StateNotifier<AsyncValue<void>> {
+  _HomeViewModel(this._read) : super(const AsyncValue.loading()) {
+    _init();
+  }
 
-final homeHistoriesStateProvider = StateNotifierProvider<_HomeHistoriesStateNotifier, List<History>>((ref) {
-  return _HomeHistoriesStateNotifier(ref.read);
+  final Reader _read;
+
+  Future<void> _init() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      await _read(pointProvider.notifier).refresh();
+      _read(_uiStateProvider.notifier).refresh();
+    });
+  }
+
+  Future<void> onRefresh() async {
+    _read(_uiStateProvider.notifier).onLoaded();
+
+    // ロード一瞬で終わってしまうので、もう少し重い処理がある想定で1秒ディレイしている
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    _read(pointProvider.notifier).refresh();
+    _read(appSettingProvider.notifier).refresh();
+    _read(_uiStateProvider.notifier).refresh();
+
+    _read(_uiStateProvider.notifier).onLoaded();
+  }
+}
+
+final _uiStateProvider = StateNotifierProvider<_UiStateNotifier, _UiState>((ref) {
+  return _UiStateNotifier(ref.read, _UiState.empty());
 });
 
-class _HomeHistoriesStateNotifier extends StateNotifier<List<History>> {
-  _HomeHistoriesStateNotifier(this._read) : super([]);
+class _UiStateNotifier extends StateNotifier<_UiState> {
+  _UiStateNotifier(this._read, _UiState state) : super(state);
 
   final Reader _read;
 
   Future<void> refresh() async {
     final h = await _read(pointRepositoryProvider).findHistories();
     h.sort((s, v) => v.dateTime.compareTo(s.dateTime));
-    state = h;
+    state = state.copyWith(histories: h);
+  }
+
+  void onLoading() {
+    state = state.copyWith(loadingPointCard: true);
+  }
+
+  void onLoaded() {
+    state = state.copyWith(loadingPointCard: false);
   }
 }
 
-///
-/// ViewModel
-///
-class HomeViewModel extends BaseViewModel {
-  HomeViewModel(this._read) {
-    _init();
+class _UiState {
+  _UiState(this.loadingPointCard, this.histories);
+
+  factory _UiState.empty() {
+    return _UiState(false, []);
   }
 
-  final Reader _read;
+  final bool loadingPointCard;
+  final List<History> histories;
 
-  ///
-  /// ホーム画面の表示に必要な処理を行う
-  ///
-  Future<void> _init() async {
-    try {
-      await _read(pointProvider.notifier).refresh();
-      _read(homeHistoriesStateProvider.notifier).refresh();
-      success();
-    } on Exception catch (e, s) {
-      error('ホーム画面表示時にエラーが発生しました。', exception: e, stackTrace: s);
-    }
-  }
-
-  Future<void> onRefresh() async {
-    try {
-      _read(homeLoadingPointCardStateProvider.notifier).state = true;
-
-      // ロード一瞬で終わってしまうので、もう少し重い処理がある想定で1秒ディレイしている
-      await Future<void>.delayed(const Duration(seconds: 1));
-
-      _read(pointProvider.notifier).refresh();
-      _read(appSettingProvider.notifier).refresh();
-      _read(homeHistoriesStateProvider.notifier).refresh();
-
-      _read(homeLoadingPointCardStateProvider.notifier).state = false;
-    } on Exception catch (e, s) {
-      error('ホーム画面更新時にエラーが発生しました。', exception: e, stackTrace: s);
-    }
+  _UiState copyWith({bool? loadingPointCard, List<History>? histories}) {
+    return _UiState(
+      loadingPointCard ?? this.loadingPointCard,
+      histories ?? this.histories,
+    );
   }
 }
+
+final homeLoadingPointCardStateProvider = Provider<bool>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.loadingPointCard));
+});
+
+final homeHistoriesProvider = Provider<List<History>>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.histories));
+});
