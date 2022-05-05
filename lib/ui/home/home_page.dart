@@ -26,8 +26,6 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(homeViewModel).uiState;
-
     return LifecycleWrapper(
       onLifecycleEvent: (event) {
         if (event == LifecycleEvent.active) {
@@ -38,31 +36,11 @@ class HomePage extends ConsumerWidget {
       },
       child: Scaffold(
         appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-        body: uiState.when(
-          loading: () {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-          success: () {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                _ViewPointCard(),
-                SizedBox(height: 16),
-                _ViewMenuButton(),
-                SizedBox(height: 16),
-                _ViewHistories(),
-              ],
-            );
-          },
-          error: (String errorMsg) {
-            _processOnError(context, errorMsg);
-            return Center(
-              child: Text(R.res.strings.homeLoadingErrorLabel),
-            );
-          },
-        ),
+        body: ref.watch(homeViewModel).when(
+              loading: () => const _OnViewLoading(),
+              data: (_) => const _OnViewSuccess(),
+              error: (err, _) => _OnViewError(errorMessage: '$err'),
+            ),
       ),
     );
   }
@@ -75,20 +53,63 @@ class HomePage extends ConsumerWidget {
   ///
   void onResume(WidgetRef ref) {
     AppLogger.d('onResumeが呼ばれました');
-    ref.read(homeViewModel).onRefresh();
+    ref.read(homeViewModel.notifier).onRefresh();
   }
 
   void onStop() {
     AppLogger.d('onStopが呼ばれました');
   }
+}
 
-  void _processOnError(BuildContext context, String errorMsg) {
+class _OnViewLoading extends StatelessWidget {
+  const _OnViewLoading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _OnViewError extends StatelessWidget {
+  const _OnViewError({Key? key, required this.errorMessage}) : super(key: key);
+
+  final String errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    _processOnError(context);
+    return Center(
+      child: Text(R.res.strings.homeLoadingErrorLabel),
+    );
+  }
+
+  void _processOnError(BuildContext context) {
     Future<void>.delayed(Duration.zero).then((value) {
       AppDialog(
-        errorMsg,
+        errorMessage,
         onOk: () {},
       ).show(context);
     });
+  }
+}
+
+class _OnViewSuccess extends StatelessWidget {
+  const _OnViewSuccess({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        _ViewPointCard(),
+        SizedBox(height: 16),
+        _ViewMenuButton(),
+        SizedBox(height: 16),
+        _ViewHistories(),
+      ],
+    );
   }
 }
 
@@ -102,18 +123,12 @@ class _ViewPointCard extends ConsumerWidget {
     return Container(
       height: 230,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: _createBody(isLoading),
+      child: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : const _ViewBodyPointCard(),
     );
-  }
-
-  Widget _createBody(bool isLoading) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    } else {
-      return const _ViewBodyPointCard();
-    }
   }
 }
 
@@ -223,7 +238,7 @@ class _ViewHistories extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final histories = ref.watch(homeHistoriesStateProvider);
+    final histories = ref.watch(homeHistoriesProvider);
     if (histories.isEmpty) {
       return const SizedBox();
     }

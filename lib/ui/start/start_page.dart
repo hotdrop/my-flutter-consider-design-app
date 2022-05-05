@@ -19,42 +19,58 @@ class StartPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(startViewModel).uiState;
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         appBar: AppBar(
           title: Text(R.res.strings.startTitle),
         ),
-        body: uiState.when(
-          loading: () {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-          success: () {
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
-                child: Column(
-                  children: [
-                    Text(R.res.strings.startOverview),
-                    const SizedBox(height: 16),
-                    const _ViewTextFieldNickName(),
-                    const SizedBox(height: 24),
-                    const _ViewTextFieldEmail(),
-                    const SizedBox(height: 24),
-                    const _ViewSaveButton(),
-                  ],
-                ),
-              ),
-            );
-          },
-          error: (_) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
+        body: ref.watch(startViewModel).when(
+              data: (_) => const _OnViewSuccess(),
+              error: (err, _) => _OnViewLoading(errorMessage: '$err'),
+              loading: () => const _OnViewLoading(),
+            ),
+      ),
+    );
+  }
+}
+
+class _OnViewLoading extends StatelessWidget {
+  const _OnViewLoading({Key? key, this.errorMessage}) : super(key: key);
+
+  final String? errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    if (errorMessage != null) {
+      Future<void>.delayed(Duration.zero).then((_) {
+        AppDialog(errorMessage!).show(context);
+      });
+    }
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _OnViewSuccess extends StatelessWidget {
+  const _OnViewSuccess({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
+        child: Column(
+          children: [
+            Text(R.res.strings.startOverview),
+            const SizedBox(height: 16),
+            const _ViewTextFieldNickName(),
+            const SizedBox(height: 24),
+            const _ViewTextFieldEmail(),
+            const SizedBox(height: 24),
+            const _ViewSaveButton(),
+          ],
         ),
       ),
     );
@@ -74,8 +90,7 @@ class _ViewTextFieldNickName extends ConsumerWidget {
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
       ),
-      // YouTubeのFlutterチャンネルでティアオフの動画を見て使ってみている
-      onChanged: ref.read(startViewModel).inputNickName,
+      onChanged: ref.read(startViewModel.notifier).inputNickName,
     );
   }
 }
@@ -97,7 +112,7 @@ class _ViewTextFieldEmail extends ConsumerWidget {
       validator: _validate,
       onChanged: (String? newVal) {
         if (newVal != null && _validate(newVal) == null) {
-          ref.read(startViewModel).inputEmail(newVal);
+          ref.read(startViewModel.notifier).inputEmail(newVal);
         }
       },
     );
@@ -119,7 +134,7 @@ class _ViewSaveButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enableButton = ref.watch(startPageCanSaveStateProvider);
+    final enableButton = ref.watch(startPageCanSaveProvider);
 
     return ElevatedButton(
       onPressed: enableButton
@@ -127,15 +142,14 @@ class _ViewSaveButton extends ConsumerWidget {
               const dialog = AppProgressDialog<void>();
               await dialog.show(
                 context,
-                execute: ref.read(startViewModel).save,
+                execute: ref.read(startViewModel.notifier).save,
                 onSuccess: (result) {
                   AppLogger.d('成功したので次に進みます。');
                   HomePage.start(context);
                 },
                 onError: (e, s) {
                   AppLogger.d('エラーです。e:$e stackTrace:$s');
-                  final errorDialog = AppDialog('$e');
-                  errorDialog.show(context);
+                  AppDialog('$e').show(context);
                 },
               );
             }

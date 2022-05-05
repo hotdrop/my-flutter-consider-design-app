@@ -10,27 +10,23 @@ class AppDialog {
   final String _message;
   final Function? onOk;
 
-  void show(BuildContext context) {
-    showDialog<void>(
+  Future<void> show(BuildContext context) async {
+    await showDialog<void>(
       context: context,
       builder: (_) {
-        return _createDialog(context);
+        return AlertDialog(
+          content: Text(_message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                onOk?.call();
+                Navigator.pop(context);
+              },
+              child: Text(R.res.strings.dialogOk),
+            ),
+          ],
+        );
       },
-    );
-  }
-
-  AlertDialog _createDialog(BuildContext context) {
-    return AlertDialog(
-      content: Text(_message),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            onOk?.call();
-            Navigator.pop(context);
-          },
-          child: Text(R.res.strings.dialogOk),
-        ),
-      ],
     );
   }
 }
@@ -46,34 +42,30 @@ class ConfirmDialog {
   final Function onOk;
   final Function? onCancel;
 
-  void show(BuildContext context) {
-    showDialog<void>(
+  Future<void> show(BuildContext context) async {
+    await showDialog<void>(
       context: context,
       builder: (_) {
-        return _createDialog(context);
+        return AlertDialog(
+          content: Text(_message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                onCancel?.call();
+                Navigator.pop(context);
+              },
+              child: Text(R.res.strings.dialogCancel),
+            ),
+            TextButton(
+              onPressed: () {
+                onOk.call();
+                Navigator.pop(context);
+              },
+              child: Text(R.res.strings.dialogOk),
+            ),
+          ],
+        );
       },
-    );
-  }
-
-  AlertDialog _createDialog(BuildContext context) {
-    return AlertDialog(
-      content: Text(_message),
-      actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            onCancel?.call();
-            Navigator.pop(context);
-          },
-          child: Text(R.res.strings.dialogCancel),
-        ),
-        TextButton(
-          onPressed: () {
-            onOk.call();
-            Navigator.pop(context);
-          },
-          child: Text(R.res.strings.dialogOk),
-        ),
-      ],
     );
   }
 }

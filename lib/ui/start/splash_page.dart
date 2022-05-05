@@ -16,15 +16,13 @@ class SplashPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uiState = ref.watch(splashViewModel).uiState;
-
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.splashTitle)),
-      body: uiState.when(
-        loading: () => const _ViewLoadingPage(),
-        success: () => _onSuccess(context, ref),
-        error: (String errorMsg) => _onError(context, errorMsg),
-      ),
+      body: ref.watch(splashViewModel).when(
+            data: (_) => _onSuccess(context, ref),
+            error: (err, _) => _onError(context, '$err'),
+            loading: () => const _ViewLoadingPage(),
+          ),
     );
   }
 
