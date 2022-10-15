@@ -14,7 +14,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          primary: colors.themeColor,
+          backgroundColor: colors.themeColor,
         ),
       ),
     );
