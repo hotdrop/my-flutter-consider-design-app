@@ -18,6 +18,4 @@ analyzer:
 
 linter:
   rules:
-    avoid_print: true # Uncomment to disable the `avoid_print` rule
-    prefer_single_quotes: true # Uncomment to enable the `prefer_single_quotes` rule
     unnecessary_overrides: false # mockitoの自動生成クラスでこれが検出されてしまうので無効にする
