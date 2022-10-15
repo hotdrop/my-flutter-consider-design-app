@@ -17,7 +17,9 @@ class SplashPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text(R.res.strings.splashTitle)),
+      appBar: AppBar(
+        title: Text(R.res.strings.splashTitle),
+      ),
       body: ref.watch(splashViewModel).when(
             data: (_) => _onSuccess(context, ref),
             error: (err, _) => _onError(context, '$err'),
@@ -69,7 +71,7 @@ class _ViewLoadingPage extends ConsumerWidget {
       padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
       child: Column(
         children: [
-          Image.asset(R.res.images.startImage),
+          Center(child: Image.asset(R.res.images.startImage)),
           const SizedBox(height: 16),
           const CircularProgressIndicator(),
           const SizedBox(height: 24),
