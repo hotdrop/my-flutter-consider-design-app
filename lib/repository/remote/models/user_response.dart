@@ -4,7 +4,7 @@ part 'user_response.freezed.dart';
 part 'user_response.g.dart';
 
 @freezed
-abstract class UserResponse with _$UserResponse {
+class UserResponse with _$UserResponse {
   factory UserResponse(String userId) = _UserResponse;
 
   factory UserResponse.fromJson(Map<String, Object?> json) => _$UserResponseFromJson(json);
