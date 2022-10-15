@@ -101,7 +101,6 @@ class _OnViewSuccess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
         _ViewPointCard(),
         SizedBox(height: 16),
@@ -119,9 +118,11 @@ class _ViewPointCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isLoading = ref.watch(homeLoadingPointCardStateProvider);
+    final height = MediaQuery.of(context).size.height / 3;
 
     return Container(
-      height: 230,
+      width: height * 2,
+      height: height,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: isLoading
           ? const Center(
@@ -140,7 +141,9 @@ class _ViewBodyPointCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       elevation: 4,
       child: Stack(
         children: [
