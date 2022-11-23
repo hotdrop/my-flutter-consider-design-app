@@ -41,7 +41,7 @@ class PointUseConfirmPage extends ConsumerWidget {
 }
 
 class _ViewTextUsePoint extends ConsumerWidget {
-  const _ViewTextUsePoint({Key? key}) : super(key: key);
+  const _ViewTextUsePoint();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,7 +55,7 @@ class _ViewTextUsePoint extends ConsumerWidget {
 }
 
 class _ViewDecisionButton extends ConsumerWidget {
-  const _ViewDecisionButton({Key? key}) : super(key: key);
+  const _ViewDecisionButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -72,7 +72,7 @@ class _ViewDecisionButton extends ConsumerWidget {
     const dialog = AppProgressDialog<void>();
     await dialog.show(
       context,
-      execute: ref.read(pointUseViewModel.notifier).execute,
+      execute: ref.read(pointUseViewModel).execute,
       onSuccess: (result) {
         AppLogger.d('ポイント利用に成功しました！');
         Navigator.popUntil(context, (route) => route.isFirst);

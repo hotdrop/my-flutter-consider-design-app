@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/repository/app_setting_repository.dart';
+import 'package:mybt/models/app_setting.dart';
 
 final startViewModel = StateNotifierProvider.autoDispose<_StartViewModel, AsyncValue<void>>((ref) {
   return _StartViewModel(ref);
@@ -30,7 +30,7 @@ class _StartViewModel extends StateNotifier<AsyncValue<void>> {
   Future<void> save() async {
     final inputNickname = _ref.read(_uiStateProvider).nickName;
     final inputEmail = _ref.read(_uiStateProvider).email;
-    await _ref.read(appSettingRepositoryProvider).registerUser(inputNickname, inputEmail);
+    await _ref.read(appSettingProvider.notifier).save(inputNickname, inputEmail);
   }
 }
 
@@ -67,14 +67,6 @@ class _UiState {
     );
   }
 }
-
-final startPageInputNickNameProvider = Provider<String>((ref) {
-  return ref.watch(_uiStateProvider.select((value) => value.nickName));
-});
-
-final startPageInputEmailProvider = Provider<String>((ref) {
-  return ref.watch(_uiStateProvider.select((value) => value.email));
-});
 
 final startPageCanSaveProvider = Provider<bool>((ref) {
   final uiState = ref.watch(_uiStateProvider);

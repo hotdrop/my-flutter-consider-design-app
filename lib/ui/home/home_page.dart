@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/history.dart';
+import 'package:mybt/models/point.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
+import 'package:mybt/ui/home/row_history.dart';
 import 'package:mybt/ui/pointget/point_get_input_page.dart';
 import 'package:mybt/ui/pointuse/point_use_input_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
@@ -34,7 +37,7 @@ class HomePage extends ConsumerWidget {
 }
 
 class _OnViewLoading extends StatelessWidget {
-  const _OnViewLoading({Key? key}) : super(key: key);
+  const _OnViewLoading();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +48,7 @@ class _OnViewLoading extends StatelessWidget {
 }
 
 class _OnViewError extends StatelessWidget {
-  const _OnViewError({Key? key, required this.errorMessage}) : super(key: key);
+  const _OnViewError({required this.errorMessage});
 
   final String errorMessage;
 
@@ -62,7 +65,7 @@ class _OnViewError extends StatelessWidget {
 }
 
 class _OnViewSuccess extends StatelessWidget {
-  const _OnViewSuccess({Key? key}) : super(key: key);
+  const _OnViewSuccess();
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +88,7 @@ class _ViewPointCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height / 3;
+    final height = MediaQuery.of(context).size.height / 4;
 
     return Container(
       width: height * 2,
@@ -123,7 +126,7 @@ class _ViewPointOnCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final point = ref.watch(homeShowPointProvider);
+    final point = ref.watch(pointProvider);
 
     return Padding(
       padding: const EdgeInsets.only(top: 80),
@@ -140,11 +143,11 @@ class _ViewPointOnCard extends ConsumerWidget {
 }
 
 class _ViewUserInfoOnCard extends ConsumerWidget {
-  const _ViewUserInfoOnCard({Key? key}) : super(key: key);
+  const _ViewUserInfoOnCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appSettings = ref.watch(homeAppSettingProvider);
+    final appSettings = ref.watch(appSettingProvider);
 
     return Positioned(
       bottom: 16,
@@ -167,7 +170,7 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
 }
 
 class _ViewMenuButton extends StatelessWidget {
-  const _ViewMenuButton({Key? key}) : super(key: key);
+  const _ViewMenuButton();
 
   @override
   Widget build(BuildContext context) {
@@ -193,11 +196,11 @@ class _ViewMenuButton extends StatelessWidget {
 }
 
 class _ViewHistories extends ConsumerWidget {
-  const _ViewHistories({Key? key}) : super(key: key);
+  const _ViewHistories();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final histories = ref.watch(homeHistoriesProvider);
+    final histories = ref.watch(historyProvider);
     if (histories.isEmpty) {
       return const SizedBox();
     }
@@ -206,25 +209,7 @@ class _ViewHistories extends ConsumerWidget {
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: histories.length,
-        itemBuilder: (ctx, index) => _ViewRowHistory(histories[index]),
-      ),
-    );
-  }
-}
-
-class _ViewRowHistory extends StatelessWidget {
-  const _ViewRowHistory(this.history, {Key? key}) : super(key: key);
-
-  final History history;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2.0,
-      child: ListTile(
-        title: Text(history.toStringDateTime()),
-        subtitle: AppText.normal(history.detail),
-        trailing: AppText.large('${history.point} ${R.res.strings.pointUnit}'),
+        itemBuilder: (ctx, index) => RowHistory(history: histories[index]),
       ),
     );
   }

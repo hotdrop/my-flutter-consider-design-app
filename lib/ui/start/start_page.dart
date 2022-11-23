@@ -36,7 +36,7 @@ class StartPage extends ConsumerWidget {
 }
 
 class _OnViewLoading extends StatelessWidget {
-  const _OnViewLoading({Key? key, this.errorMessage}) : super(key: key);
+  const _OnViewLoading({this.errorMessage});
 
   final String? errorMessage;
 
@@ -54,7 +54,7 @@ class _OnViewLoading extends StatelessWidget {
 }
 
 class _OnViewSuccess extends StatelessWidget {
-  const _OnViewSuccess({Key? key}) : super(key: key);
+  const _OnViewSuccess();
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class _OnViewSuccess extends StatelessWidget {
 }
 
 class _ViewTextFieldNickName extends ConsumerWidget {
-  const _ViewTextFieldNickName({Key? key}) : super(key: key);
+  const _ViewTextFieldNickName();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -96,7 +96,7 @@ class _ViewTextFieldNickName extends ConsumerWidget {
 }
 
 class _ViewTextFieldEmail extends ConsumerWidget {
-  const _ViewTextFieldEmail({Key? key}) : super(key: key);
+  const _ViewTextFieldEmail();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -130,7 +130,7 @@ class _ViewTextFieldEmail extends ConsumerWidget {
 }
 
 class _ViewSaveButton extends ConsumerWidget {
-  const _ViewSaveButton({Key? key}) : super(key: key);
+  const _ViewSaveButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -5,7 +5,7 @@ import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/start/splash_page.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
