@@ -5,49 +5,49 @@ import 'package:mybt/models/point.dart';
 import 'package:mybt/repository/point_repository.dart';
 
 final homeViewModel = StateNotifierProvider.autoDispose<_HomeViewModel, AsyncValue<void>>((ref) {
-  return _HomeViewModel(ref.read);
+  return _HomeViewModel(ref);
 });
 
 class _HomeViewModel extends StateNotifier<AsyncValue<void>> {
-  _HomeViewModel(this._read) : super(const AsyncValue.loading()) {
+  _HomeViewModel(this._ref) : super(const AsyncValue.loading()) {
     _init();
   }
 
-  final Reader _read;
+  final Ref _ref;
 
   Future<void> _init() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      await _read(pointProvider.notifier).refresh();
-      _read(_uiStateProvider.notifier).refresh();
+      await _ref.read(pointProvider.notifier).refresh();
+      _ref.read(_uiStateProvider.notifier).refresh();
     });
   }
 
   Future<void> onRefresh() async {
-    _read(_uiStateProvider.notifier).onLoaded();
+    _ref.read(_uiStateProvider.notifier).onLoaded();
 
     // ロード一瞬で終わってしまうので、もう少し重い処理がある想定で1秒ディレイしている
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    _read(pointProvider.notifier).refresh();
-    _read(appSettingProvider.notifier).refresh();
-    _read(_uiStateProvider.notifier).refresh();
+    _ref.read(pointProvider.notifier).refresh();
+    _ref.read(appSettingProvider.notifier).refresh();
+    _ref.read(_uiStateProvider.notifier).refresh();
 
-    _read(_uiStateProvider.notifier).onLoaded();
+    _ref.read(_uiStateProvider.notifier).onLoaded();
   }
 }
 
 final _uiStateProvider = StateNotifierProvider<_UiStateNotifier, _UiState>((ref) {
-  return _UiStateNotifier(ref.read, _UiState.empty());
+  return _UiStateNotifier(ref, _UiState.empty());
 });
 
 class _UiStateNotifier extends StateNotifier<_UiState> {
-  _UiStateNotifier(this._read, _UiState state) : super(state);
+  _UiStateNotifier(this._ref, _UiState state) : super(state);
 
-  final Reader _read;
+  final Ref _ref;
 
   Future<void> refresh() async {
-    final h = await _read(pointRepositoryProvider).findHistories();
+    final h = await _ref.read(pointRepositoryProvider).findHistories();
     h.sort((s, v) => v.dateTime.compareTo(s.dateTime));
     state = state.copyWith(histories: h);
   }

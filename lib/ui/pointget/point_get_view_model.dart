@@ -3,15 +3,15 @@ import 'package:mybt/repository/point_repository.dart';
 import 'package:mybt/res/res.dart';
 
 final pointGetViewModel = StateNotifierProvider.autoDispose<_PointGetViewModel, AsyncValue<void>>((ref) {
-  return _PointGetViewModel(ref.read);
+  return _PointGetViewModel(ref);
 });
 
 class _PointGetViewModel extends StateNotifier<AsyncValue<void>> {
-  _PointGetViewModel(this._read) : super(const AsyncValue.loading()) {
+  _PointGetViewModel(this._ref) : super(const AsyncValue.loading()) {
     _init();
   }
 
-  final Reader _read;
+  final Ref _ref;
   late int _holdPoint;
   int get holdPoint => _holdPoint;
 
@@ -21,19 +21,19 @@ class _PointGetViewModel extends StateNotifier<AsyncValue<void>> {
   Future<void> _init() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final myPoint = await _read(pointRepositoryProvider).find();
+      final myPoint = await _ref.read(pointRepositoryProvider).find();
       _holdPoint = myPoint.balance;
       _maxAvaiableGetPoint = R.res.integers.maxPoint - myPoint.balance;
     });
   }
 
   void input(int newVal) {
-    _read(_uiStateProvider.notifier).inputPoint(newVal);
+    _ref.read(_uiStateProvider.notifier).inputPoint(newVal);
   }
 
   Future<void> pointGet() async {
-    final value = _read(_uiStateProvider).inputPoint;
-    await _read(pointRepositoryProvider).pointGet(value);
+    final value = _ref.read(_uiStateProvider).inputPoint;
+    await _ref.read(pointRepositoryProvider).pointGet(value);
   }
 }
 

@@ -2,15 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/setting_repository.dart';
 
 final startViewModel = StateNotifierProvider.autoDispose<_StartViewModel, AsyncValue<void>>((ref) {
-  return _StartViewModel(ref.read);
+  return _StartViewModel(ref);
 });
 
 class _StartViewModel extends StateNotifier<AsyncValue<void>> {
-  _StartViewModel(this._read) : super(const AsyncValue.loading()) {
+  _StartViewModel(this._ref) : super(const AsyncValue.loading()) {
     _init();
   }
 
-  final Reader _read;
+  final Ref _ref;
 
   Future<void> _init() async {
     state = const AsyncValue.loading();
@@ -20,17 +20,17 @@ class _StartViewModel extends StateNotifier<AsyncValue<void>> {
   }
 
   void inputNickName(String newVal) {
-    _read(_uiStateProvider.notifier).inputNickName(newVal);
+    _ref.read(_uiStateProvider.notifier).inputNickName(newVal);
   }
 
   void inputEmail(String newVal) {
-    _read(_uiStateProvider.notifier).inputEmail(newVal);
+    _ref.read(_uiStateProvider.notifier).inputEmail(newVal);
   }
 
   Future<void> save() async {
-    final inputNickname = _read(_uiStateProvider).nickName;
-    final inputEmail = _read(_uiStateProvider).email;
-    await _read(settingRepositoryProvider).registerUser(inputNickname, inputEmail);
+    final inputNickname = _ref.read(_uiStateProvider).nickName;
+    final inputEmail = _ref.read(_uiStateProvider).email;
+    await _ref.read(settingRepositoryProvider).registerUser(inputNickname, inputEmail);
   }
 }
 

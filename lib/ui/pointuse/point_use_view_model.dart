@@ -2,33 +2,33 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/point_repository.dart';
 
 final pointUseViewModel = StateNotifierProvider.autoDispose<_PointUseViewModel, AsyncValue<void>>((ref) {
-  return _PointUseViewModel(ref.read);
+  return _PointUseViewModel(ref);
 });
 
 class _PointUseViewModel extends StateNotifier<AsyncValue<void>> {
-  _PointUseViewModel(this._read) : super(const AsyncValue.loading()) {
+  _PointUseViewModel(this._ref) : super(const AsyncValue.loading()) {
     _init();
   }
 
-  final Reader _read;
+  final Ref _ref;
   late int _holdPoint;
   int get holdPoint => _holdPoint;
 
   Future<void> _init() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final myPoint = await _read(pointRepositoryProvider).find();
+      final myPoint = await _ref.read(pointRepositoryProvider).find();
       _holdPoint = myPoint.balance;
     });
   }
 
   void input(int newVal) {
-    _read(_uiStateProvider.notifier).inputPoint(newVal);
+    _ref.read(_uiStateProvider.notifier).inputPoint(newVal);
   }
 
   Future<void> execute() async {
-    final value = _read(pointUseInputStateProvider);
-    await _read(pointRepositoryProvider).pointUse(value);
+    final value = _ref.read(pointUseInputStateProvider);
+    await _ref.read(pointRepositoryProvider).pointUse(value);
   }
 }
 
