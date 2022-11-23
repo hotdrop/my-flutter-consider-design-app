@@ -12,6 +12,7 @@ miroで作成した画面フローのスクリーンショット
 View, ViewModel, Repositoryの3層構成にしています。  
 - ViewModel
   - `StateNotifierProvder`で実装しています。1つの業務フロー（ポイント獲得やポイント利用といった単位）で1つのViewModelを作り、フロー終了とともにautoDisposeで破棄されるようにしています。
+  - →TODO アノテーション使った方法に修正。AsyncNotifierでよさそう
 - Model
   - アプリ全体を通して使うものは`Notifier`で実装するようにしており、それ以外は通常のクラスとなります。
   - <追記> 
@@ -19,7 +20,7 @@ View, ViewModel, Repositoryの3層構成にしています。
      - 現在は仕方ないので`Notifier`クラスは`Notifier`というプレフィックスをつけています。
 - Repository
   - 通常のクラスで実装し`Provider`でアクセスします。配下のlocalパッケージとremoteパッケージのクラスも同じです。
-  - ここは`riverpod_annotation`を使うと、無駄に自動生成クラスが多くなるし引数も取らない（familyは使わない）のでそのままにしています。
+  - ここは`riverpod_annotation`は使っていません。無駄に自動生成クラスが多くなるし引数も取らない（familyは使わない）ためです。
   - LocalDBはHiveを使用しRemote通信はdioを使用しています。ただ、実際のAPI通信は行わずDioClientはfake実装しています。
   - LocalDBで使うEntityやRemoteのResponseはアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にしています。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするためです。）
 
@@ -35,7 +36,8 @@ View, ViewModel, Repositoryの3層構成にしています。
 
 とはいえ画面によって作りを変えると「じゃあ状態管理が何個までなら`StateProvider`でやっていいんだ？となりますので設計は少なくとも1アプリ内では統一した方がいいと思っています。
 
-とりあえず2022年5月の改修時点では`UiState`で統一しています。
+とりあえず2022年5月の改修時点では`UiState`で統一しています。  
+→この方法で縛ると、せっかくModelクラスでProvideしているデータをいちいち各UiStateで再取得することになってもったいないと思ったので再検討する。
 
 # ViewModelの作成単位
 その業務フローに入るメインの画面は必ずViewModelを持つようにしました。  
