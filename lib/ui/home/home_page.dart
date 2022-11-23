@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:lifecycle/lifecycle.dart';
-import 'package:mybt/common/app_logger.dart';
-import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/history.dart';
-import 'package:mybt/models/point.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/pointget/point_get_input_page.dart';
@@ -26,38 +22,14 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LifecycleWrapper(
-      onLifecycleEvent: (event) {
-        if (event == LifecycleEvent.active) {
-          onResume(ref);
-        } else if (event == LifecycleEvent.inactive) {
-          onStop();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-        body: ref.watch(homeViewModel).when(
-              loading: () => const _OnViewLoading(),
-              data: (_) => const _OnViewSuccess(),
-              error: (err, _) => _OnViewError(errorMessage: '$err'),
-            ),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text(R.res.strings.homeTitle)),
+      body: ref.watch(homeViewModel).when(
+            loading: () => const _OnViewLoading(),
+            data: (_) => const _OnViewSuccess(),
+            error: (err, _) => _OnViewError(errorMessage: '$err'),
+          ),
     );
-  }
-
-  ///
-  /// onResumeでonRefreshを呼びポイントCardViewとHistoryを更新している。
-  /// LifecycleWrapperを使ってみたかったのと部分的なViewのロード検証をしたかったので作ったが、本当は
-  /// homeHistoriesStateProviderをhomeViewModelではなくmodelクラスに切り出してポイントGetやUseを
-  /// したときにProviderを更新するようにしたほうがいいと思う。
-  ///
-  void onResume(WidgetRef ref) {
-    AppLogger.d('onResumeが呼ばれました');
-    ref.read(homeViewModel.notifier).onRefresh();
-  }
-
-  void onStop() {
-    AppLogger.d('onStopが呼ばれました');
   }
 }
 
@@ -79,19 +51,13 @@ class _OnViewError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _processOnError(context);
+    Future<void>.delayed(Duration.zero).then((value) {
+      AppDialog(errorMessage, onOk: () {}).show(context);
+    });
+
     return Center(
       child: Text(R.res.strings.homeLoadingErrorLabel),
     );
-  }
-
-  void _processOnError(BuildContext context) {
-    Future<void>.delayed(Duration.zero).then((value) {
-      AppDialog(
-        errorMessage,
-        onOk: () {},
-      ).show(context);
-    });
   }
 }
 
@@ -112,66 +78,52 @@ class _OnViewSuccess extends StatelessWidget {
   }
 }
 
-class _ViewPointCard extends ConsumerWidget {
-  const _ViewPointCard({Key? key}) : super(key: key);
+class _ViewPointCard extends StatelessWidget {
+  const _ViewPointCard();
+
+  static final dateFormatter = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoading = ref.watch(homeLoadingPointCardStateProvider);
+  Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height / 3;
 
     return Container(
       width: height * 2,
       height: height,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : const _ViewBodyPointCard(),
-    );
-  }
-}
-
-class _ViewBodyPointCard extends ConsumerWidget {
-  const _ViewBodyPointCard({Key? key}) : super(key: key);
-
-  static final dateFormatter = DateFormat('y/M/d H:m:s');
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 4,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Ink.image(
-              image: AssetImage(R.res.images.homePointCard),
-              fit: BoxFit.fill,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 4,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Ink.image(
+                image: AssetImage(R.res.images.homePointCard),
+                fit: BoxFit.fill,
+              ),
             ),
-          ),
-          Positioned(
-            top: 16,
-            left: 16,
-            child: AppText.normal(dateFormatter.format(DateTime.now()), color: Colors.white),
-          ),
-          const _ViewPointOnCard(),
-          const _ViewUserInfoOnCard(),
-        ],
+            Positioned(
+              top: 16,
+              left: 16,
+              child: AppText.normal(dateFormatter.format(DateTime.now()), color: Colors.white),
+            ),
+            const _ViewPointOnCard(),
+            const _ViewUserInfoOnCard(),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _ViewPointOnCard extends ConsumerWidget {
-  const _ViewPointOnCard({Key? key}) : super(key: key);
+  const _ViewPointOnCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final point = ref.watch(pointProvider);
+    final point = ref.watch(homeShowPointProvider);
 
     return Padding(
       padding: const EdgeInsets.only(top: 80),
@@ -192,9 +144,7 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appSettings = ref.watch(appSettingProvider);
-    final nickname = appSettings.nickName ?? R.res.strings.homeUnSettingNickname;
-    final email = appSettings.email ?? R.res.strings.homeUnSettingEmail;
+    final appSettings = ref.watch(homeAppSettingProvider);
 
     return Positioned(
       bottom: 16,
@@ -202,8 +152,14 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText.normal(nickname, color: Colors.white),
-          AppText.normal(email, color: Colors.white),
+          AppText.normal(
+            appSettings.nickName ?? R.res.strings.homeUnSettingNickname,
+            color: Colors.white,
+          ),
+          AppText.normal(
+            appSettings.email ?? R.res.strings.homeUnSettingEmail,
+            color: Colors.white,
+          ),
         ],
       ),
     );

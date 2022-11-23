@@ -13,9 +13,13 @@ View, ViewModel, Repositoryの3層構成にしています。
 - ViewModel
   - `StateNotifierProvder`で実装しています。1つの業務フロー（ポイント獲得やポイント利用といった単位）で1つのViewModelを作り、フロー終了とともにautoDisposeで破棄されるようにしています。
 - Model
-  - アプリ全体を通して使うものは`StateNotifierProvider`で実装するようにしており、それ以外は通常のクラスとなります。
+  - アプリ全体を通して使うものは`Notifier`で実装するようにしており、それ以外は通常のクラスとなります。
+  - <追記> 
+     - Riverpod2.0対応で`StateNotifierProvider`を`Notifier`に変更したらだいぶコードがスッキリしました。ただModelクラスのNotifierクラスの名称をどうするか悩んでいます。Widget側からアクセスする場合はNotifierクラスになるので、できれば「モデルクラス＋Provider」という名前でアクセスしたいです。
+     - 現在は仕方ないので`Notifier`クラスは`Notifier`というプレフィックスをつけています。
 - Repository
   - 通常のクラスで実装し`Provider`でアクセスします。配下のlocalパッケージとremoteパッケージのクラスも同じです。
+  - ここは`riverpod_annotation`を使うと、無駄に自動生成クラスが多くなるし引数も取らない（familyは使わない）のでそのままにしています。
   - LocalDBはHiveを使用しRemote通信はdioを使用しています。ただ、実際のAPI通信は行わずDioClientはfake実装しています。
   - LocalDBで使うEntityやRemoteのResponseはアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にしています。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするためです。）
 
@@ -41,17 +45,6 @@ View, ViewModel, Repositoryの3層構成にしています。
 EffectiveDartには相対パスが望ましいかもと記載があるが強く推奨しているわけではないようです。  
 個人的に相対パスは紛らわしいことと、拡張機能で自動importするとpackage記載になるので一貫性を保つため全てpackage記載にしています。  
 参考: https://stackoverflow.com/questions/59693195/flutter-imports-relative-path-or-package  
-
-# ローカル変数
-どれにするか迷いました。
-1. final [型] argName;
-2. [型] argName;
-3. var argName;
-4. final argName;
-
-本当は1がいいと思いますが、長いので右辺で型が明確な場合はせっかく推論機能もあるし3か4が良いと思っています。  
-個人的にいつもの癖があるのでこのアプリでは4で行くことにします。  
-（型が完全に不明で可読性に問題があると判断した場合は1も使います）
 
 # テスト
 このリポジトリではサンプルしかありませんが、本当はViewModel/Repositoryパッケージ/Modelパッケージでビジネスロジックを持っているクラスは全部テスト書いた方が良いと思います。  

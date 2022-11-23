@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
+import 'package:mybt/repository/app_setting_repository.dart';
 import 'package:mybt/repository/point_repository.dart';
 
 final homeViewModel = StateNotifierProvider.autoDispose<_HomeViewModel, AsyncValue<void>>((ref) {
@@ -17,70 +18,49 @@ class _HomeViewModel extends StateNotifier<AsyncValue<void>> {
 
   Future<void> _init() async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      await _ref.read(pointProvider.notifier).refresh();
-      _ref.read(_uiStateProvider.notifier).refresh();
-    });
+    state = await AsyncValue.guard(() async => await refresh());
   }
-
-  Future<void> onRefresh() async {
-    _ref.read(_uiStateProvider.notifier).onLoaded();
-
-    // ロード一瞬で終わってしまうので、もう少し重い処理がある想定で1秒ディレイしている
-    await Future<void>.delayed(const Duration(seconds: 1));
-
-    _ref.read(pointProvider.notifier).refresh();
-    _ref.read(appSettingProvider.notifier).refresh();
-    _ref.read(_uiStateProvider.notifier).refresh();
-
-    _ref.read(_uiStateProvider.notifier).onLoaded();
-  }
-}
-
-final _uiStateProvider = StateNotifierProvider<_UiStateNotifier, _UiState>((ref) {
-  return _UiStateNotifier(ref, _UiState.empty());
-});
-
-class _UiStateNotifier extends StateNotifier<_UiState> {
-  _UiStateNotifier(this._ref, _UiState state) : super(state);
-
-  final Ref _ref;
 
   Future<void> refresh() async {
-    final h = await _ref.read(pointRepositoryProvider).findHistories();
-    h.sort((s, v) => v.dateTime.compareTo(s.dateTime));
-    state = state.copyWith(histories: h);
-  }
+    final appSetting = await _ref.read(appSettingRepositoryProvider).find();
+    final point = await _ref.read(pointRepositoryProvider).find();
 
-  void onLoading() {
-    state = state.copyWith(loadingPointCard: true);
-  }
+    final histories = await _ref.read(pointRepositoryProvider).findHistories();
+    histories.sort((s, v) => v.dateTime.compareTo(s.dateTime));
 
-  void onLoaded() {
-    state = state.copyWith(loadingPointCard: false);
+    _ref.read(_uiStateProvider.notifier).state = _UiState(appSetting, point, histories);
   }
 }
 
+final _uiStateProvider = StateProvider<_UiState>((ref) => _UiState.empty());
+
 class _UiState {
-  _UiState(this.loadingPointCard, this.histories);
+  _UiState(this.appSetting, this.point, this.histories);
 
   factory _UiState.empty() {
-    return _UiState(false, []);
+    return _UiState(AppSetting(), const Point(0), []);
   }
 
-  final bool loadingPointCard;
+  final AppSetting appSetting;
+  final Point point;
   final List<History> histories;
 
-  _UiState copyWith({bool? loadingPointCard, List<History>? histories}) {
+  _UiState copyWith({AppSetting? appSetting, Point? point, List<History>? histories}) {
     return _UiState(
-      loadingPointCard ?? this.loadingPointCard,
+      appSetting ?? this.appSetting,
+      point ?? this.point,
       histories ?? this.histories,
     );
   }
 }
 
-final homeLoadingPointCardStateProvider = Provider<bool>((ref) {
-  return ref.watch(_uiStateProvider.select((value) => value.loadingPointCard));
+// このやり方だと値が更新されないのでやはり個々のModelクラスに永続Providerを用意する方が良さそう
+final homeAppSettingProvider = Provider<AppSetting>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.appSetting));
+});
+
+final homeShowPointProvider = Provider<Point>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.point));
 });
 
 final homeHistoriesProvider = Provider<List<History>>((ref) {

@@ -33,9 +33,6 @@ class PointApi {
           '/point',
           request: PostPointRequest(userId, inputPoint),
         );
-
-    // 自身の保持ポイントを更新する
-    await _ref.read(pointProvider.notifier).refresh();
   }
 
   ///
@@ -46,8 +43,5 @@ class PointApi {
           '/point/use',
           request: PostPointRequest(userId, inputPoint),
         );
-
-    // 自身の保持ポイントを更新する
-    await _ref.read(pointProvider.notifier).refresh();
   }
 }

@@ -6,10 +6,10 @@ import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/repository/local/setting_dao.dart';
 import 'package:mybt/repository/remote/api/user_api.dart';
 
-final settingRepositoryProvider = Provider((ref) => SettingRepository(ref));
+final appSettingRepositoryProvider = Provider((ref) => AppSettingRepository(ref));
 
-class SettingRepository {
-  const SettingRepository(this._ref);
+class AppSettingRepository {
+  const AppSettingRepository(this._ref);
 
   final Ref _ref;
 
@@ -29,8 +29,5 @@ class SettingRepository {
 
     await _ref.read(settingDaoProvider).save(userId: user.id, nickName: nickname, email: email);
     AppLogger.d('保存完了しました。 生成UserID=${user.id}');
-
-    // メモリで持っているアプリ設定情報も更新する
-    _ref.read(appSettingProvider.notifier).refresh();
   }
 }

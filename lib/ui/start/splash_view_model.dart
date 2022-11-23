@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_setting.dart';
+import 'package:mybt/repository/app_setting_repository.dart';
 import 'package:mybt/repository/local/local_data_source.dart';
 
 final splashViewModel = StateNotifierProvider.autoDispose<_SplashViewModel, AsyncValue<void>>((ref) {
@@ -16,13 +16,36 @@ class _SplashViewModel extends StateNotifier<AsyncValue<void>> {
 
   Future<void> _init() async {
     state = const AsyncValue.loading();
+
+    // 起動処理が一瞬で終わってしまうので、もう少し重い処理がある想定で1秒ディレイしている
+    await Future<void>.delayed(const Duration(seconds: 1));
+
     state = await AsyncValue.guard((() async {
-      AppLogger.d('アプリの初期処理を実行します。');
       await _ref.read(localDataSourceProvider).init();
-      await _ref.read(appSettingProvider.notifier).refresh();
-      // 起動処理が一瞬で終わってしまうので、もう少し重い処理がある想定で1秒ディレイしている
-      await Future<void>.delayed(const Duration(seconds: 1));
-      AppLogger.d('アプリの初期処理が完了しました。');
+      final appSetting = await _ref.read(appSettingRepositoryProvider).find();
+      _ref.read(_uiStateProvider.notifier).state = _UiState(appSetting);
     }));
   }
 }
+
+final _uiStateProvider = StateProvider<_UiState>((ref) => _UiState.empty());
+
+class _UiState {
+  _UiState(this.appSetting);
+
+  factory _UiState.empty() {
+    return _UiState(AppSetting());
+  }
+
+  final AppSetting appSetting;
+
+  _UiState copyWith({AppSetting? appSetting}) {
+    return _UiState(
+      appSetting ?? this.appSetting,
+    );
+  }
+}
+
+final splashAppSettingProvider = Provider<AppSetting>((ref) {
+  return ref.watch(_uiStateProvider.select((value) => value.appSetting));
+});
