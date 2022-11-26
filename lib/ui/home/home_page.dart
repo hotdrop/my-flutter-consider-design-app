@@ -27,7 +27,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-      body: ref.watch(homeViewModel).when(
+      body: ref.watch(homeViewModelProvider).when(
             loading: () => const _OnViewLoading(),
             data: (_) => const _OnViewSuccess(),
             error: (err, _) => _OnViewError(errorMessage: '$err'),

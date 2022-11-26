@@ -7,7 +7,7 @@ import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/progress_dialog.dart';
 
-class PointUseConfirmPage extends ConsumerWidget {
+class PointUseConfirmPage extends StatelessWidget {
   const PointUseConfirmPage._();
 
   static void start(BuildContext context) {
@@ -18,7 +18,7 @@ class PointUseConfirmPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.pointUseTitle)),
       body: Padding(
@@ -72,7 +72,7 @@ class _ViewDecisionButton extends ConsumerWidget {
     const dialog = AppProgressDialog<void>();
     await dialog.show(
       context,
-      execute: ref.read(pointUseViewModel).execute,
+      execute: ref.read(pointUseViewModelProvider.notifier).execute,
       onSuccess: (result) {
         AppLogger.d('ポイント利用に成功しました！');
         Navigator.popUntil(context, (route) => route.isFirst);

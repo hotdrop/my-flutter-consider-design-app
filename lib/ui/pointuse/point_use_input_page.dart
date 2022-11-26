@@ -72,9 +72,9 @@ class _ViewPointTextField extends ConsumerWidget {
         onChanged: (String? newVal) {
           if (_pointValidator(newVal, holdPoint) == null) {
             final inputVal = (newVal != null) ? int.tryParse(newVal) ?? 0 : 0;
-            ref.read(pointUseViewModel).input(inputVal);
+            ref.read(pointUseViewModelProvider.notifier).input(inputVal);
           } else {
-            ref.read(pointUseViewModel).input(0);
+            ref.read(pointUseViewModelProvider.notifier).input(0);
           }
         },
       ),

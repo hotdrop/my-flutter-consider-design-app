@@ -25,7 +25,7 @@ class StartPage extends ConsumerWidget {
         appBar: AppBar(
           title: Text(R.res.strings.startTitle),
         ),
-        body: ref.watch(startViewModel).when(
+        body: ref.watch(startViewModelProvider).when(
               data: (_) => const _OnViewSuccess(),
               error: (err, _) => _OnViewLoading(errorMessage: '$err'),
               loading: () => const _OnViewLoading(),
@@ -90,7 +90,7 @@ class _ViewTextFieldNickName extends ConsumerWidget {
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
         ),
       ),
-      onChanged: ref.read(startViewModel.notifier).inputNickName,
+      onChanged: ref.read(startViewModelProvider.notifier).inputNickName,
     );
   }
 }
@@ -112,7 +112,7 @@ class _ViewTextFieldEmail extends ConsumerWidget {
       validator: _validate,
       onChanged: (String? newVal) {
         if (newVal != null && _validate(newVal) == null) {
-          ref.read(startViewModel.notifier).inputEmail(newVal);
+          ref.read(startViewModelProvider.notifier).inputEmail(newVal);
         }
       },
     );
@@ -142,7 +142,7 @@ class _ViewSaveButton extends ConsumerWidget {
               const dialog = AppProgressDialog<void>();
               await dialog.show(
                 context,
-                execute: ref.read(startViewModel.notifier).save,
+                execute: ref.read(startViewModelProvider.notifier).save,
                 onSuccess: (result) {
                   AppLogger.d('成功したので次に進みます。');
                   HomePage.start(context);

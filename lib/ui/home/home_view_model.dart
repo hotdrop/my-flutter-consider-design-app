@@ -1,21 +1,14 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mybt/models/history.dart';
+import 'package:mybt/models/point.dart';
 
-final homeViewModel = StateNotifierProvider.autoDispose<_HomeViewModel, AsyncValue<void>>((ref) {
-  return _HomeViewModel(ref);
-});
+part 'home_view_model.g.dart';
 
-class _HomeViewModel extends StateNotifier<AsyncValue<void>> {
-  _HomeViewModel(this._ref) : super(const AsyncValue.loading()) {
-    _init();
-  }
-
-  final Ref _ref;
-
-  Future<void> _init() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      await _ref.read(historyProvider.notifier).refresh();
-    });
+@riverpod
+class HomeViewModel extends _$HomeViewModel {
+  @override
+  Future<void> build() async {
+    await ref.read(pointProvider.notifier).refresh();
+    await ref.read(historyProvider.notifier).refresh();
   }
 }

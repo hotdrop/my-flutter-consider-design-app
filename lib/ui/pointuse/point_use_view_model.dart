@@ -1,36 +1,30 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
 
-final pointUseViewModel = Provider((ref) => _PointUseViewModel(ref));
+part 'point_use_view_model.g.dart';
 
-class _PointUseViewModel {
-  _PointUseViewModel(this._ref);
-
-  final Ref _ref;
+@riverpod
+class PointUseViewModel extends _$PointUseViewModel {
+  @override
+  void build() {
+    // 初期処理があればここで行う
+  }
 
   void input(int newVal) {
-    _ref.read(_uiStateProvider.notifier).inputPoint(newVal);
+    final prevVal = ref.read(_uiStateProvider);
+    ref.read(_uiStateProvider.notifier).state = prevVal.copyWith(inputPoint: newVal);
   }
 
   Future<void> execute() async {
-    final value = _ref.read(pointUseInputStateProvider);
-    await _ref.read(pointProvider.notifier).use(value);
-    await _ref.read(historyProvider.notifier).saveUse(value);
+    final value = ref.read(pointUseInputStateProvider);
+    await ref.read(pointProvider.notifier).use(value);
+    await ref.read(historyProvider.notifier).saveUse(value);
   }
 }
 
-final _uiStateProvider = StateNotifierProvider<_UiStateNotifier, _UiState>((_) {
-  return _UiStateNotifier(_UiState.empty());
-});
-
-class _UiStateNotifier extends StateNotifier<_UiState> {
-  _UiStateNotifier(_UiState state) : super(state);
-
-  void inputPoint(int newVal) {
-    state = state.copyWith(inputPoint: newVal);
-  }
-}
+final _uiStateProvider = StateProvider<_UiState>((_) => _UiState.empty());
 
 class _UiState {
   _UiState(this.inputPoint);
