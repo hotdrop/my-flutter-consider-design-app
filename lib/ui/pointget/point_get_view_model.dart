@@ -52,6 +52,6 @@ final pointGetInputStateProvider = Provider<int>((ref) {
 ///
 final pointGetOkInputPointStateProvider = Provider<bool>((ref) {
   final inputPoint = ref.watch(pointGetInputStateProvider);
-  final maxVal = ref.read(pointProvider).maxAvaiablePoint;
+  final maxVal = ref.watch(pointProvider).maxAvaiablePoint;
   return inputPoint > 0 && inputPoint <= maxVal;
 });

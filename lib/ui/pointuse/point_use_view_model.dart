@@ -50,6 +50,6 @@ final pointUseInputStateProvider = Provider<int>((ref) {
 // ユーザーが入力したポイント数が利用可能か
 final pointUseOkInputPointStateProvider = StateProvider<bool>((ref) {
   final inputVal = ref.watch(pointUseInputStateProvider);
-  final holdVal = ref.read(pointProvider).balance;
+  final holdVal = ref.watch(pointProvider).balance;
   return inputVal > 0 && inputVal <= holdVal;
 });
