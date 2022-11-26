@@ -8,11 +8,18 @@ miroで作成した画面フローのスクリーンショット
 ![01_start](./screenshot/01_起動処理フロー.png)  
 ![02_business](./screenshot/02_ポイント獲得と利用フロー.png)
 
+# 状態管理
+`Riverpod 2.0`（とannotation）を利用しています。  
+私の中でProviderが状態管理手法で落ち着いた後、Providerから移行し`ChangeNotifierProvider`→`StateNotifierProvider`→`Notifier`と変遷しています。  
+絶賛、試行錯誤中です。
+
 # 設計概要
-View, ViewModel, Repositoryの3層構成にしています。  
+View, ViewModel, Repositoryの3レイヤー構成にしています。  
 - ViewModel
-  - `StateNotifierProvder`で実装しています。1つの業務フロー（ポイント獲得やポイント利用といった単位）で1つのViewModelを作り、フロー終了とともにautoDisposeで破棄されるようにしています。
-  - →TODO アノテーション使った方法に修正。AsyncNotifierでよさそう
+  - Annotationを使用した`AsyncNotifier`で実装しています。ファーストビューに非同期で取得したいデータがなければ通常の`Notifier`で良いと思います。
+  - ViewModelは1業務フロー（ポイント獲得やポイント利用といった単位）1ViewModelとしています。
+  - ViewModelにはロジックを持ち、画面のデータは後述する`UiState`としてまとめて`StateProvider`で持っています。（各々の値はselectでwatchする）
+  - もうViewModelではないので`Provider`か`Controller`にでも名前変えた方がいいかなと思っています。
 - Model
   - アプリ全体を通して使うものは`Notifier`で実装するようにしており、それ以外は通常のクラスとなります。
   - <追記> 
@@ -25,23 +32,15 @@ View, ViewModel, Repositoryの3層構成にしています。
   - LocalDBで使うEntityやRemoteのResponseはアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にしています。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするためです。）
 
 # 状態管理
-`Riverpod`を使っています。  
-カウンターアプリなど単純な状態管理なら`StateProvider`で良いのですが、商用プロダクトでは色々な入力フィールドが相互に絡み合うようなケースが多いです。  
+大きく2種類かなと思っています。  
+1. アプリ設定値やログインユーザー情報などアプリ全体で使用するデータ→グローバルにアクセスする
+2. ユーザーの入力値や選択値など各々の業務フローでのみ使用するデータ→ViewModelの`UiState`として定義する
+これはコードでは縛れないので約束事として縛る感じになると思います。（protectedが欲しい・・）  
 
-そのため、複数の状態を持つならUIModelのような画面データを集約したモデルクラスを作って`StateNotifier`でやりとりするのが良いかなと思っています。
-[AndroidDeveloperサイトのUILayer](https://developer.android.com/jetpack/guide/ui-layer)にも記載されたとおりUIStateとして定義されました。
+`UiState`というのは画面データを集約したクラスで[AndroidDeveloperサイトのUILayer](https://developer.android.com/jetpack/guide/ui-layer)を参考にしました。  
 
-ただ、当然画面によって管理する状態数は異なるので、`UiState`として分けるより`StateProvider`で管理した方が圧倒的に楽なケースもあります。
-そもそも、管理する状態数が多い、ユーザーの入力コンポーネントが20とかある画面はそもそもUI設計を見直せという話もありますが業務でやる場合は理想論だけでは難しいです。
-
-とはいえ画面によって作りを変えると「じゃあ状態管理が何個までなら`StateProvider`でやっていいんだ？となりますので設計は少なくとも1アプリ内では統一した方がいいと思っています。
-
-とりあえず2022年5月の改修時点では`UiState`で統一しています。  
-→この方法で縛ると、せっかくModelクラスでProvideしているデータをいちいち各UiStateで再取得することになってもったいないと思ったので再検討する。
-
-# ViewModelの作成単位
-その業務フローに入るメインの画面は必ずViewModelを持つようにしました。  
-（業務フローに入るメインの画面、というのは例えばAndroidでActivity＋複数Fragmentで画面フローを作る場合のActivityのこと）  
+`UiState`はちょっと悩んでいます。`UiState`で持つより個々で`StateProvider`を用意する方がシンプルに書けるかなと思っており、そもそも「管理する状態数が多い、例えばユーザーの入力コンポーネントが20とかある画面はそもそもUI設計を見直せ」という話もStackOverflowでありました。  
+しかし、業務でやる場合は理想論だけでは難しく、とりあえず2022年5月の改修時点では`UiState`で統一しています。  
 
 # import文
 EffectiveDartには相対パスが望ましいかもと記載があるが強く推奨しているわけではないようです。  

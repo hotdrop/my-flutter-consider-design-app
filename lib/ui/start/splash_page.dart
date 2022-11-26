@@ -20,7 +20,7 @@ class SplashPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(R.res.strings.splashTitle),
       ),
-      body: ref.watch(splashViewModel).when(
+      body: ref.watch(splashViewModelProvider).when(
             data: (_) => const _ViewOnSuccess(),
             error: (err, _) => _ViewOnError('$err'),
             loading: () => const _ViewLoadingPage(),
@@ -63,7 +63,8 @@ class _ViewOnSuccess extends ConsumerWidget {
     final isInitialized = ref.watch(appSettingProvider).isInitialized();
 
     if (isInitialized) {
-      Future<void>.delayed(Duration.zero).then((_) {
+      // 初期化に少し時間がかる想定
+      Future<void>.delayed(const Duration(seconds: 1)).then((_) {
         HomePage.start(context);
       });
       return const _ViewLoadingPage();

@@ -1,54 +1,35 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/models/app_setting.dart';
 
-final startViewModel = StateNotifierProvider.autoDispose<_StartViewModel, AsyncValue<void>>((ref) {
-  return _StartViewModel(ref);
-});
+part 'start_view_model.g.dart';
 
-class _StartViewModel extends StateNotifier<AsyncValue<void>> {
-  _StartViewModel(this._ref) : super(const AsyncValue.loading()) {
-    _init();
-  }
-
-  final Ref _ref;
-
-  Future<void> _init() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      // 何か初期化あればここで行う
-    });
+@riverpod
+class StartViewModel extends _$StartViewModel {
+  @override
+  Future<void> build() async {
+    // 初期化はここで行う
+    await Future<void>.delayed(const Duration(milliseconds: 500));
   }
 
   void inputNickName(String newVal) {
-    _ref.read(_uiStateProvider.notifier).inputNickName(newVal);
+    final prevUiState = ref.read(_uiStateProvider);
+    ref.read(_uiStateProvider.notifier).state = prevUiState.copyWith(nickName: newVal);
   }
 
   void inputEmail(String newVal) {
-    _ref.read(_uiStateProvider.notifier).inputEmail(newVal);
+    final prevUiState = ref.read(_uiStateProvider);
+    ref.read(_uiStateProvider.notifier).state = prevUiState.copyWith(email: newVal);
   }
 
   Future<void> save() async {
-    final inputNickname = _ref.read(_uiStateProvider).nickName;
-    final inputEmail = _ref.read(_uiStateProvider).email;
-    await _ref.read(appSettingProvider.notifier).save(inputNickname, inputEmail);
+    final inputNickname = ref.read(_uiStateProvider).nickName;
+    final inputEmail = ref.read(_uiStateProvider).email;
+    await ref.read(appSettingProvider.notifier).save(inputNickname, inputEmail);
   }
 }
 
-final _uiStateProvider = StateNotifierProvider<_UiStateNotifier, _UiState>((_) {
-  return _UiStateNotifier(_UiState.empty());
-});
-
-class _UiStateNotifier extends StateNotifier<_UiState> {
-  _UiStateNotifier(_UiState state) : super(state);
-
-  void inputNickName(String newVal) {
-    state = state.copyWith(nickName: newVal);
-  }
-
-  void inputEmail(String newVal) {
-    state = state.copyWith(email: newVal);
-  }
-}
+final _uiStateProvider = StateProvider<_UiState>((ref) => _UiState.empty());
 
 class _UiState {
   const _UiState(this.nickName, this.email);

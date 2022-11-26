@@ -30,9 +30,9 @@ class AppSettingRepository {
 
   Future<void> registerUser(String? nickname, String? email) async {
     AppLogger.d('これらの値を保存します: ニックネーム=$nickname メールアドレス: $email');
-    final user = await _ref.read(userApiProvider).create(nickname, email);
+    final id = await _ref.read(userApiProvider).create(nickname, email);
 
-    await _ref.read(settingDaoProvider).save(userId: user.id, nickName: nickname, email: email);
-    AppLogger.d('保存完了しました。 生成UserID=${user.id}');
+    await _ref.read(settingDaoProvider).save(userId: id, nickName: nickname, email: email);
+    AppLogger.d('保存完了しました。 生成UserID=$id');
   }
 }
