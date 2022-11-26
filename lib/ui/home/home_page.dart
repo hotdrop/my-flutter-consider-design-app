@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:lifecycle/lifecycle.dart';
-import 'package:mybt/common/app_logger.dart';
 import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
+import 'package:mybt/ui/home/row_history.dart';
 import 'package:mybt/ui/pointget/point_get_input_page.dart';
 import 'package:mybt/ui/pointuse/point_use_input_page.dart';
 import 'package:mybt/ui/widgets/app_dialog.dart';
@@ -26,43 +25,19 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return LifecycleWrapper(
-      onLifecycleEvent: (event) {
-        if (event == LifecycleEvent.active) {
-          onResume(ref);
-        } else if (event == LifecycleEvent.inactive) {
-          onStop();
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(title: Text(R.res.strings.homeTitle)),
-        body: ref.watch(homeViewModel).when(
-              loading: () => const _OnViewLoading(),
-              data: (_) => const _OnViewSuccess(),
-              error: (err, _) => _OnViewError(errorMessage: '$err'),
-            ),
-      ),
+    return Scaffold(
+      appBar: AppBar(title: Text(R.res.strings.homeTitle)),
+      body: ref.watch(homeViewModel).when(
+            loading: () => const _OnViewLoading(),
+            data: (_) => const _OnViewSuccess(),
+            error: (err, _) => _OnViewError(errorMessage: '$err'),
+          ),
     );
-  }
-
-  ///
-  /// onResumeでonRefreshを呼びポイントCardViewとHistoryを更新している。
-  /// LifecycleWrapperを使ってみたかったのと部分的なViewのロード検証をしたかったので作ったが、本当は
-  /// homeHistoriesStateProviderをhomeViewModelではなくmodelクラスに切り出してポイントGetやUseを
-  /// したときにProviderを更新するようにしたほうがいいと思う。
-  ///
-  void onResume(WidgetRef ref) {
-    AppLogger.d('onResumeが呼ばれました');
-    ref.read(homeViewModel.notifier).onRefresh();
-  }
-
-  void onStop() {
-    AppLogger.d('onStopが呼ばれました');
   }
 }
 
 class _OnViewLoading extends StatelessWidget {
-  const _OnViewLoading({Key? key}) : super(key: key);
+  const _OnViewLoading();
 
   @override
   Widget build(BuildContext context) {
@@ -73,30 +48,24 @@ class _OnViewLoading extends StatelessWidget {
 }
 
 class _OnViewError extends StatelessWidget {
-  const _OnViewError({Key? key, required this.errorMessage}) : super(key: key);
+  const _OnViewError({required this.errorMessage});
 
   final String errorMessage;
 
   @override
   Widget build(BuildContext context) {
-    _processOnError(context);
+    Future<void>.delayed(Duration.zero).then((value) {
+      AppDialog(errorMessage, onOk: () {}).show(context);
+    });
+
     return Center(
       child: Text(R.res.strings.homeLoadingErrorLabel),
     );
   }
-
-  void _processOnError(BuildContext context) {
-    Future<void>.delayed(Duration.zero).then((value) {
-      AppDialog(
-        errorMessage,
-        onOk: () {},
-      ).show(context);
-    });
-  }
 }
 
 class _OnViewSuccess extends StatelessWidget {
-  const _OnViewSuccess({Key? key}) : super(key: key);
+  const _OnViewSuccess();
 
   @override
   Widget build(BuildContext context) {
@@ -112,62 +81,48 @@ class _OnViewSuccess extends StatelessWidget {
   }
 }
 
-class _ViewPointCard extends ConsumerWidget {
-  const _ViewPointCard({Key? key}) : super(key: key);
+class _ViewPointCard extends StatelessWidget {
+  const _ViewPointCard();
+
+  static final dateFormatter = DateFormat('yyyy/MM/dd HH:mm:ss');
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoading = ref.watch(homeLoadingPointCardStateProvider);
-    final height = MediaQuery.of(context).size.height / 3;
+  Widget build(BuildContext context) {
+    final height = MediaQuery.of(context).size.height / 4;
 
     return Container(
       width: height * 2,
       height: height,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : const _ViewBodyPointCard(),
-    );
-  }
-}
-
-class _ViewBodyPointCard extends ConsumerWidget {
-  const _ViewBodyPointCard({Key? key}) : super(key: key);
-
-  static final dateFormatter = DateFormat('y/M/d H:m:s');
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 4,
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Ink.image(
-              image: AssetImage(R.res.images.homePointCard),
-              fit: BoxFit.fill,
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 4,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Ink.image(
+                image: AssetImage(R.res.images.homePointCard),
+                fit: BoxFit.fill,
+              ),
             ),
-          ),
-          Positioned(
-            top: 16,
-            left: 16,
-            child: AppText.normal(dateFormatter.format(DateTime.now()), color: Colors.white),
-          ),
-          const _ViewPointOnCard(),
-          const _ViewUserInfoOnCard(),
-        ],
+            Positioned(
+              top: 16,
+              left: 16,
+              child: AppText.normal(dateFormatter.format(DateTime.now()), color: Colors.white),
+            ),
+            const _ViewPointOnCard(),
+            const _ViewUserInfoOnCard(),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _ViewPointOnCard extends ConsumerWidget {
-  const _ViewPointOnCard({Key? key}) : super(key: key);
+  const _ViewPointOnCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -188,13 +143,11 @@ class _ViewPointOnCard extends ConsumerWidget {
 }
 
 class _ViewUserInfoOnCard extends ConsumerWidget {
-  const _ViewUserInfoOnCard({Key? key}) : super(key: key);
+  const _ViewUserInfoOnCard();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final appSettings = ref.watch(appSettingProvider);
-    final nickname = appSettings.nickName ?? R.res.strings.homeUnSettingNickname;
-    final email = appSettings.email ?? R.res.strings.homeUnSettingEmail;
 
     return Positioned(
       bottom: 16,
@@ -202,8 +155,14 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppText.normal(nickname, color: Colors.white),
-          AppText.normal(email, color: Colors.white),
+          AppText.normal(
+            appSettings.nickName ?? R.res.strings.homeUnSettingNickname,
+            color: Colors.white,
+          ),
+          AppText.normal(
+            appSettings.email ?? R.res.strings.homeUnSettingEmail,
+            color: Colors.white,
+          ),
         ],
       ),
     );
@@ -211,7 +170,7 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
 }
 
 class _ViewMenuButton extends StatelessWidget {
-  const _ViewMenuButton({Key? key}) : super(key: key);
+  const _ViewMenuButton();
 
   @override
   Widget build(BuildContext context) {
@@ -237,11 +196,11 @@ class _ViewMenuButton extends StatelessWidget {
 }
 
 class _ViewHistories extends ConsumerWidget {
-  const _ViewHistories({Key? key}) : super(key: key);
+  const _ViewHistories();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final histories = ref.watch(homeHistoriesProvider);
+    final histories = ref.watch(historyProvider);
     if (histories.isEmpty) {
       return const SizedBox();
     }
@@ -250,25 +209,7 @@ class _ViewHistories extends ConsumerWidget {
       child: ListView.builder(
         shrinkWrap: true,
         itemCount: histories.length,
-        itemBuilder: (ctx, index) => _ViewRowHistory(histories[index]),
-      ),
-    );
-  }
-}
-
-class _ViewRowHistory extends StatelessWidget {
-  const _ViewRowHistory(this.history, {Key? key}) : super(key: key);
-
-  final History history;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2.0,
-      child: ListTile(
-        title: Text(history.toStringDateTime()),
-        subtitle: AppText.normal(history.detail),
-        trailing: AppText.large('${history.point} ${R.res.strings.pointUnit}'),
+        itemBuilder: (ctx, index) => RowHistory(history: histories[index]),
       ),
     );
   }

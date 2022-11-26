@@ -1,19 +1,21 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/common/app_logger.dart';
-import 'package:mybt/repository/setting_repository.dart';
+import 'package:mybt/repository/app_setting_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final appSettingProvider = StateNotifierProvider<AppSettingsNotifier, AppSetting>((ref) {
-  return AppSettingsNotifier(ref.read);
-});
+final appSettingProvider = NotifierProvider<AppSettingNotifier, AppSetting>(AppSettingNotifier.new);
 
-class AppSettingsNotifier extends StateNotifier<AppSetting> {
-  AppSettingsNotifier(this._read) : super(AppSetting());
+class AppSettingNotifier extends Notifier<AppSetting> {
+  @override
+  AppSetting build() {
+    return AppSetting();
+  }
 
-  final Reader _read;
+  Future<void> save(String? nickname, String? email) async {
+    await ref.read(appSettingRepositoryProvider).registerUser(nickname, email);
+    state = await ref.read(appSettingRepositoryProvider).find();
+  }
 
-  Future<void> refresh() async {
-    AppLogger.d('アプリ設定のrefreshが呼ばれました。');
-    state = await _read(settingRepositoryProvider).find();
+  Future<void> load() async {
+    state = await ref.read(appSettingRepositoryProvider).find();
   }
 }
 

@@ -12,7 +12,7 @@ import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
 class SplashPage extends ConsumerWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,26 +21,21 @@ class SplashPage extends ConsumerWidget {
         title: Text(R.res.strings.splashTitle),
       ),
       body: ref.watch(splashViewModel).when(
-            data: (_) => _onSuccess(context, ref),
-            error: (err, _) => _onError(context, '$err'),
+            data: (_) => const _ViewOnSuccess(),
+            error: (err, _) => _ViewOnError('$err'),
             loading: () => const _ViewLoadingPage(),
           ),
     );
   }
+}
 
-  Widget _onSuccess(BuildContext context, WidgetRef ref) {
-    final isInitialized = ref.read(appSettingProvider).isInitialized();
-    if (isInitialized) {
-      Future<void>.delayed(Duration.zero).then((_) {
-        HomePage.start(context);
-      });
-      return const _ViewLoadingPage();
-    } else {
-      return const _ViewFirstPage();
-    }
-  }
+class _ViewOnError extends StatelessWidget {
+  const _ViewOnError(this.errorMsg);
 
-  Widget _onError(BuildContext context, String errorMsg) {
+  final String errorMsg;
+
+  @override
+  Widget build(BuildContext context) {
     Future<void>.delayed(Duration.zero).then((value) {
       AppDialog(
         errorMsg,
@@ -60,8 +55,26 @@ class SplashPage extends ConsumerWidget {
   }
 }
 
+class _ViewOnSuccess extends ConsumerWidget {
+  const _ViewOnSuccess();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isInitialized = ref.watch(appSettingProvider).isInitialized();
+
+    if (isInitialized) {
+      Future<void>.delayed(Duration.zero).then((_) {
+        HomePage.start(context);
+      });
+      return const _ViewLoadingPage();
+    } else {
+      return const _ViewFirstPage();
+    }
+  }
+}
+
 class _ViewLoadingPage extends ConsumerWidget {
-  const _ViewLoadingPage({Key? key}) : super(key: key);
+  const _ViewLoadingPage();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,7 +96,7 @@ class _ViewLoadingPage extends ConsumerWidget {
 }
 
 class _ViewFirstPage extends StatelessWidget {
-  const _ViewFirstPage({Key? key}) : super(key: key);
+  const _ViewFirstPage();
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +120,7 @@ class _ViewFirstPage extends StatelessWidget {
 }
 
 class _ViewButtonStart extends StatelessWidget {
-  const _ViewButtonStart({Key? key}) : super(key: key);
+  const _ViewButtonStart();
 
   @override
   Widget build(BuildContext context) {

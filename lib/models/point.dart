@@ -1,21 +1,34 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/point_repository.dart';
+import 'package:mybt/res/res.dart';
 
-final pointProvider = StateNotifierProvider<PointNotifier, Point>((ref) {
-  return PointNotifier(ref.read);
-});
+final pointProvider = NotifierProvider<PointNotifier, Point>(PointNotifier.new);
 
-class PointNotifier extends StateNotifier<Point> {
-  PointNotifier(this._read) : super(const Point(0));
+class PointNotifier extends Notifier<Point> {
+  @override
+  Point build() {
+    return const Point(0);
+  }
 
-  final Reader _read;
+  Future<void> acquire(int value) async {
+    await ref.read(pointRepositoryProvider).acquire(value);
+    await refresh();
+  }
+
+  Future<void> use(int value) async {
+    await ref.read(pointRepositoryProvider).use(value);
+    await refresh();
+  }
 
   Future<void> refresh() async {
-    state = await _read(pointRepositoryProvider).find();
+    state = await ref.read(pointRepositoryProvider).find();
   }
 }
 
 class Point {
   const Point(this.balance);
+
   final int balance;
+
+  int get maxAvaiablePoint => R.res.integers.maxPoint - balance;
 }

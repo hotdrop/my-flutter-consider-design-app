@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/repository/local/setting_dao.dart';
-import 'package:mybt/repository/setting_repository.dart';
+import 'package:mybt/repository/app_setting_repository.dart';
 
 import 'setting_repository_test.mocks.dart';
 
@@ -25,7 +25,7 @@ void main() {
       overrides: [settingDaoProvider.overrideWithValue(mockDao)],
     );
 
-    final settingRepository = container.read(settingRepositoryProvider);
+    final settingRepository = container.read(appSettingRepositoryProvider);
     final result = await settingRepository.find();
 
     expect(result.userId, expectAppSetting.userId);

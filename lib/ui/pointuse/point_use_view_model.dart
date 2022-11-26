@@ -1,34 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/repository/point_repository.dart';
+import 'package:mybt/models/history.dart';
+import 'package:mybt/models/point.dart';
 
-final pointUseViewModel = StateNotifierProvider.autoDispose<_PointUseViewModel, AsyncValue<void>>((ref) {
-  return _PointUseViewModel(ref.read);
-});
+final pointUseViewModel = Provider((ref) => _PointUseViewModel(ref));
 
-class _PointUseViewModel extends StateNotifier<AsyncValue<void>> {
-  _PointUseViewModel(this._read) : super(const AsyncValue.loading()) {
-    _init();
-  }
+class _PointUseViewModel {
+  _PointUseViewModel(this._ref);
 
-  final Reader _read;
-  late int _holdPoint;
-  int get holdPoint => _holdPoint;
-
-  Future<void> _init() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      final myPoint = await _read(pointRepositoryProvider).find();
-      _holdPoint = myPoint.balance;
-    });
-  }
+  final Ref _ref;
 
   void input(int newVal) {
-    _read(_uiStateProvider.notifier).inputPoint(newVal);
+    _ref.read(_uiStateProvider.notifier).inputPoint(newVal);
   }
 
   Future<void> execute() async {
-    final value = _read(pointUseInputStateProvider);
-    await _read(pointRepositoryProvider).pointUse(value);
+    final value = _ref.read(pointUseInputStateProvider);
+    await _ref.read(pointProvider.notifier).use(value);
+    await _ref.read(historyProvider.notifier).saveUse(value);
   }
 }
 
@@ -68,6 +56,6 @@ final pointUseInputStateProvider = Provider<int>((ref) {
 // ユーザーが入力したポイント数が利用可能か
 final pointUseOkInputPointStateProvider = StateProvider<bool>((ref) {
   final inputVal = ref.watch(pointUseInputStateProvider);
-  final holdVal = ref.read(pointUseViewModel.notifier).holdPoint;
+  final holdVal = ref.read(pointProvider).balance;
   return inputVal > 0 && inputVal <= holdVal;
 });

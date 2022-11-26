@@ -1,39 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/repository/point_repository.dart';
-import 'package:mybt/res/res.dart';
+import 'package:mybt/models/history.dart';
+import 'package:mybt/models/point.dart';
 
-final pointGetViewModel = StateNotifierProvider.autoDispose<_PointGetViewModel, AsyncValue<void>>((ref) {
-  return _PointGetViewModel(ref.read);
-});
+final pointGetViewModel = Provider((ref) => _PointGetViewModel(ref));
 
-class _PointGetViewModel extends StateNotifier<AsyncValue<void>> {
-  _PointGetViewModel(this._read) : super(const AsyncValue.loading()) {
-    _init();
-  }
+class _PointGetViewModel {
+  _PointGetViewModel(this._ref);
 
-  final Reader _read;
-  late int _holdPoint;
-  int get holdPoint => _holdPoint;
-
-  late int _maxAvaiableGetPoint;
-  int get maxAvaiableGetPoint => _maxAvaiableGetPoint;
-
-  Future<void> _init() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      final myPoint = await _read(pointRepositoryProvider).find();
-      _holdPoint = myPoint.balance;
-      _maxAvaiableGetPoint = R.res.integers.maxPoint - myPoint.balance;
-    });
-  }
+  final Ref _ref;
 
   void input(int newVal) {
-    _read(_uiStateProvider.notifier).inputPoint(newVal);
+    _ref.read(_uiStateProvider.notifier).inputPoint(newVal);
   }
 
   Future<void> pointGet() async {
-    final value = _read(_uiStateProvider).inputPoint;
-    await _read(pointRepositoryProvider).pointGet(value);
+    final value = _ref.read(_uiStateProvider).inputPoint;
+    await _ref.read(pointProvider.notifier).acquire(value);
+    await _ref.read(historyProvider.notifier).saveAcquire(value);
   }
 }
 
@@ -74,7 +57,7 @@ final pointGetInputStateProvider = Provider<int>((ref) {
 /// ユーザーが入力したポイント数が獲得可能か
 ///
 final pointGetOkInputPointStateProvider = Provider<bool>((ref) {
-  final inputVal = ref.watch(pointGetInputStateProvider);
-  final maxVal = ref.read(pointGetViewModel.notifier).maxAvaiableGetPoint;
-  return inputVal > 0 && inputVal <= maxVal;
+  final inputPoint = ref.watch(pointGetInputStateProvider);
+  final maxVal = ref.read(pointProvider).maxAvaiablePoint;
+  return inputPoint > 0 && inputPoint <= maxVal;
 });

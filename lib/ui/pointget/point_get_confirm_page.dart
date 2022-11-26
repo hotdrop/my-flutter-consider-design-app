@@ -7,7 +7,7 @@ import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 import 'package:mybt/ui/widgets/progress_dialog.dart';
 
-class PointGetConfirmPage extends ConsumerWidget {
+class PointGetConfirmPage extends StatelessWidget {
   const PointGetConfirmPage._();
 
   static void start(BuildContext context) {
@@ -18,7 +18,7 @@ class PointGetConfirmPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(R.res.strings.pointGetTitle),
@@ -44,7 +44,7 @@ class PointGetConfirmPage extends ConsumerWidget {
 }
 
 class _ViewTextGetPoint extends ConsumerWidget {
-  const _ViewTextGetPoint({Key? key}) : super(key: key);
+  const _ViewTextGetPoint();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +58,7 @@ class _ViewTextGetPoint extends ConsumerWidget {
 }
 
 class _ViewDecisionButton extends ConsumerWidget {
-  const _ViewDecisionButton({Key? key}) : super(key: key);
+  const _ViewDecisionButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,7 +75,7 @@ class _ViewDecisionButton extends ConsumerWidget {
     const dialog = AppProgressDialog<void>();
     await dialog.show(
       context,
-      execute: ref.read(pointGetViewModel.notifier).pointGet,
+      execute: ref.read(pointGetViewModel).pointGet,
       onSuccess: (result) {
         AppLogger.d('ポイント取得に成功しました！');
         Navigator.popUntil(context, (route) => route.isFirst);
