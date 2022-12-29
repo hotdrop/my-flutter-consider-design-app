@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
+import 'package:mybt/repository/history_repository.dart';
 
 part 'point_use_view_model.g.dart';
 
@@ -20,7 +20,7 @@ class PointUseViewModel extends _$PointUseViewModel {
   Future<void> execute() async {
     final value = ref.read(pointUseInputStateProvider);
     await ref.read(pointProvider.notifier).use(value);
-    await ref.read(historyProvider.notifier).saveUse(value);
+    await ref.read(historyRepositoryProvider).saveUse(value);
   }
 }
 

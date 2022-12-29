@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
+import 'package:mybt/repository/history_repository.dart';
 
 part 'point_get_view_model.g.dart';
 
@@ -20,7 +20,7 @@ class PointGetViewModel extends _$PointGetViewModel {
   Future<void> pointGet() async {
     final value = ref.read(_uiStateProvider).inputPoint;
     await ref.read(pointProvider.notifier).acquire(value);
-    await ref.read(historyProvider.notifier).saveAcquire(value);
+    await ref.read(historyRepositoryProvider).saveAcquire(value);
   }
 }
 

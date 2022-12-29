@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mybt/models/app_setting.dart';
-import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
@@ -200,7 +199,7 @@ class _ViewHistories extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final histories = ref.watch(historyProvider);
+    final histories = ref.watch(historiesProvider);
     if (histories.isEmpty) {
       return const SizedBox();
     }
