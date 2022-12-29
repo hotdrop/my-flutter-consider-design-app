@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/home/row_history.dart';
@@ -145,7 +144,7 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appSettings = ref.watch(appSettingProvider);
+    final appSettings = ref.watch(homeAppSettingProivder);
 
     return Positioned(
       bottom: 16,

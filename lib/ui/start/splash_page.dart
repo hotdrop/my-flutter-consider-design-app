@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_page.dart';
 import 'package:mybt/ui/start/splash_view_model.dart';
@@ -60,7 +59,7 @@ class _ViewOnSuccess extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isInitialized = ref.watch(appSettingProvider).isInitialized();
+    final isInitialized = ref.watch(splashAppSettingProvider)?.isInitialized() ?? false;
 
     if (isInitialized) {
       // 初期化に少し時間がかる想定
@@ -79,7 +78,7 @@ class _ViewLoadingPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userId = ref.watch(appSettingProvider).userId;
+    final userId = ref.watch(splashAppSettingProvider)?.userId;
 
     return Padding(
       padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 36),
