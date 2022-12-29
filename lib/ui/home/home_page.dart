@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:mybt/models/app_setting.dart';
-import 'package:mybt/models/history.dart';
-import 'package:mybt/models/point.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/home/home_view_model.dart';
 import 'package:mybt/ui/home/row_history.dart';
@@ -28,16 +25,16 @@ class HomePage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.homeTitle)),
       body: ref.watch(homeViewModelProvider).when(
-            loading: () => const _OnViewLoading(),
-            data: (_) => const _OnViewSuccess(),
-            error: (err, _) => _OnViewError(errorMessage: '$err'),
+            loading: () => const _ViewOnLoading(),
+            data: (_) => const _ViewOnSuccess(),
+            error: (err, _) => _ViewOnError(errorMessage: '$err'),
           ),
     );
   }
 }
 
-class _OnViewLoading extends StatelessWidget {
-  const _OnViewLoading();
+class _ViewOnLoading extends StatelessWidget {
+  const _ViewOnLoading();
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +44,8 @@ class _OnViewLoading extends StatelessWidget {
   }
 }
 
-class _OnViewError extends StatelessWidget {
-  const _OnViewError({required this.errorMessage});
+class _ViewOnError extends StatelessWidget {
+  const _ViewOnError({required this.errorMessage});
 
   final String errorMessage;
 
@@ -64,8 +61,8 @@ class _OnViewError extends StatelessWidget {
   }
 }
 
-class _OnViewSuccess extends StatelessWidget {
-  const _OnViewSuccess();
+class _ViewOnSuccess extends StatelessWidget {
+  const _ViewOnSuccess();
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +123,7 @@ class _ViewPointOnCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final point = ref.watch(pointProvider);
+    final point = ref.watch(homeCurrentPointProvider);
 
     return Padding(
       padding: const EdgeInsets.only(top: 80),
@@ -147,7 +144,7 @@ class _ViewUserInfoOnCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appSettings = ref.watch(appSettingProvider);
+    final appSettings = ref.watch(homeAppSettingProivder);
 
     return Positioned(
       bottom: 16,
@@ -200,7 +197,7 @@ class _ViewHistories extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final histories = ref.watch(historyProvider);
+    final histories = ref.watch(homeHistoriesProvider);
     if (histories.isEmpty) {
       return const SizedBox();
     }

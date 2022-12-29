@@ -9,7 +9,7 @@ miroで作成した画面フローのスクリーンショット
 ![02_business](./screenshot/02_ポイント獲得と利用フロー.png)
 
 # 状態管理
-`Riverpod 2.0`（とannotation）を利用しています。  
+`Riverpod 2.0`とannotationを利用しています。  
 私の中でProviderが状態管理手法で落ち着いた後、Providerから移行し`ChangeNotifierProvider`→`StateNotifierProvider`→`Notifier`と変遷しています。  
 絶賛、試行錯誤中です。
 
@@ -21,15 +21,16 @@ View, ViewModel, Repositoryの3レイヤー構成にしています。
   - ViewModelにはロジックを持ち、画面のデータは後述する`UiState`としてまとめて`StateProvider`で持っています。（各々の値はselectでwatchする）
   - もうViewModelではないので`Provider`か`Controller`にでも名前変えた方がいいかなと思っています。
 - Model
-  - アプリ全体を通して使うものは`Notifier`で実装するようにしており、それ以外は通常のクラスとなります。
-  - <追記> 
-     - Riverpod2.0対応で`StateNotifierProvider`を`Notifier`に変更したらだいぶコードがスッキリしました。ただModelクラスのNotifierクラスの名称をどうするか悩んでいます。Widget側からアクセスする場合はNotifierクラスになるので、できれば「モデルクラス＋Provider」という名前でアクセスしたいです。
-     - 現在は仕方ないので`Notifier`クラスは`Notifier`というプレフィックスをつけています。
+  - `StateNotifierProvider`から`Notifier`と実装を変遷してきて、2022年12月現在はModelクラスをただの箱（JavaでいうPOJO）にしています。理由は以下の通りです。
+    1. 値を`Notifier`としてアプリ全体スコープとしてしまうと、ローカルやAPI経由で取得する最新データと`Notifier`で保持するデータを両方最新化し続ける必要があってこれは煩雑でバグを生みやすいと思った。
+    2. キャッシュとして持つのであれば、FutureProviderやAsyncNotifierで事足りる。
+    3. FutureProviderが個人的につらかった点は値をキャッシュしてしまうので最新値を取得する場合にrefresh関数などを自作する必要があった。autoDisposeがきくフローであれば良いが、アプリの基底にあるホーム画面などautoDisposeが効かない画面は辛い。が、`invalidate`というメソッドがあることを知った。
+  - 一方で、Modelクラスを経由してデータのCRUDを行うのはアーキテクチャ的に全く問題ないと思っていて **ある種のデータは必ずそのProvider内でやり取りする** ということを徹底すれば元の`Notifier`実装でもいいのかなと悩んでいます。まあ、UIのデータは複数のModelクラスのデータを扱う一方で、Modelクラスは業務の意味のある単位（UIに依存しない単位）にしたいので結局今のようにしました。
 - Repository
   - 通常のクラスで実装し`Provider`でアクセスします。配下のlocalパッケージとremoteパッケージのクラスも同じです。
-  - ここは`riverpod_annotation`は使っていません。無駄に自動生成クラスが多くなるし引数も取らない（familyは使わない）ためです。
-  - LocalDBはHiveを使用しRemote通信はdioを使用しています。ただ、実際のAPI通信は行わずDioClientはfake実装しています。
-  - LocalDBで使うEntityやRemoteのResponseはアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にしています。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするためです。）
+  - ここは`riverpod_annotation`は使っていません。無駄に自動生成クラスが多くなるし引数も取らない（`family`は使わない）ためです。
+  - LocalDBは`Hive`を使用しRemote通信は`dio`を使用しています。ただ、実際のAPI通信は行わず`DioClient`はfake実装しています。
+  - LocalDBで使う`Entity`やRemoteの`Response`はアプリ内で主にデータのやり取りをするModelクラスとは別にし、Mapperなどを通してアプリで使いやすい形にしています。（特にAPIの仕様変更時にモデルクラスの影響を極力少なくするためです。）
 
 # 状態管理
 大きく2種類かなと思っています。  
