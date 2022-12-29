@@ -44,13 +44,13 @@ class _FakeDio implements Dio {
     switch (path) {
       case '/user/$fakeCoffeeUserID':
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(const Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(milliseconds: 500));
         return FakeResponse(_fakeCoffeeUser, statusCode: 200) as Response<T>;
       case '/point':
         final sharedPrefs = await SharedPreferences.getInstance();
         final currentPoint = sharedPrefs.getInt(fakeLocalStorePointKey) ?? 0;
         // 通信してるっぽくしたいのでdelayをさせる
-        await Future<void>.delayed(const Duration(seconds: 1));
+        await Future<void>.delayed(const Duration(milliseconds: 500));
         return FakeResponse({'point': currentPoint}, statusCode: 200) as Response<T>;
     }
     throw UnimplementedError();
