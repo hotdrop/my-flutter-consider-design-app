@@ -84,6 +84,8 @@ class _ViewTextFieldNickName extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return TextFormField(
       keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.next,
+      autofocus: true,
       decoration: InputDecoration(
         labelText: R.res.strings.startNickNameFieldLabel,
         border: const OutlineInputBorder(
