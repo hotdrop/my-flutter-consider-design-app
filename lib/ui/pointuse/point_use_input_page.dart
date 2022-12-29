@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mybt/models/point.dart';
 import 'package:mybt/res/res.dart';
 import 'package:mybt/ui/pointuse/point_use_confirm_page.dart';
 import 'package:mybt/ui/pointuse/point_use_view_model.dart';
+import 'package:mybt/ui/widgets/app_dialog.dart';
 import 'package:mybt/ui/widgets/app_text.dart';
 
-class PointUseInputPage extends StatelessWidget {
+class PointUseInputPage extends ConsumerWidget {
   const PointUseInputPage._();
 
   static void start(BuildContext context) {
@@ -17,23 +17,64 @@ class PointUseInputPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text(R.res.strings.pointUseTitle)),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-        child: Center(
-          child: Column(
-            children: [
-              AppText.normal(R.res.strings.pointUseInputOverview),
-              const SizedBox(height: 8),
-              const _ViewHoldPointLabel(),
-              const SizedBox(height: 16),
-              const _ViewPointTextField(),
-              const SizedBox(height: 16),
-              const _ViewButtonNext(),
-            ],
+      body: ref.watch(pointUseViewModelProvider).when(
+            data: (_) => const _ViewOnSuccess(),
+            error: (e, s) => _ViewOnError(errorMessage: '$e'),
+            loading: () => const _ViewOnLoading(),
           ),
+    );
+  }
+}
+
+class _ViewOnLoading extends StatelessWidget {
+  const _ViewOnLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _ViewOnError extends StatelessWidget {
+  const _ViewOnError({required this.errorMessage});
+
+  final String errorMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    Future<void>.delayed(Duration.zero).then((value) {
+      AppDialog(errorMessage, onOk: () {}).show(context);
+    });
+
+    return Center(
+      child: Text(R.res.strings.homeLoadingErrorLabel),
+    );
+  }
+}
+
+class _ViewOnSuccess extends StatelessWidget {
+  const _ViewOnSuccess({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+      child: Center(
+        child: Column(
+          children: [
+            AppText.normal(R.res.strings.pointUseInputOverview),
+            const SizedBox(height: 8),
+            const _ViewHoldPointLabel(),
+            const SizedBox(height: 16),
+            const _ViewPointTextField(),
+            const SizedBox(height: 16),
+            const _ViewButtonNext(),
+          ],
         ),
       ),
     );
@@ -45,7 +86,7 @@ class _ViewHoldPointLabel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final holdPoint = ref.read(pointProvider).balance;
+    final holdPoint = ref.read(pointUseCurrentPointProvider).balance;
     return AppText.large('$holdPoint ${R.res.strings.pointUnit}');
   }
 }
@@ -55,7 +96,7 @@ class _ViewPointTextField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final holdPoint = ref.watch(pointProvider).balance;
+    final holdPoint = ref.watch(pointUseCurrentPointProvider).balance;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 48),
