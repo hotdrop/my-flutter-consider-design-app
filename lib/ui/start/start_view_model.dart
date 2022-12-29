@@ -1,6 +1,6 @@
-import 'package:mybt/repository/app_setting_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mybt/repository/app_setting_repository.dart';
 
 part 'start_view_model.g.dart';
 

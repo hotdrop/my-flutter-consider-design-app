@@ -1,8 +1,8 @@
-import 'package:mybt/models/point.dart';
-import 'package:mybt/repository/point_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mybt/repository/history_repository.dart';
+import 'package:mybt/models/point.dart';
+import 'package:mybt/repository/point_repository.dart';
 
 part 'point_get_view_model.g.dart';
 

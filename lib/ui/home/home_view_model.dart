@@ -1,9 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mybt/models/app_setting.dart';
 import 'package:mybt/repository/app_setting_repository.dart';
 import 'package:mybt/repository/history_repository.dart';
 import 'package:mybt/repository/point_repository.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mybt/models/history.dart';
 import 'package:mybt/models/point.dart';
 
